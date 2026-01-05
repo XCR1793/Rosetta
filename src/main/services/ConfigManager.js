@@ -46,6 +46,7 @@ class ConfigManager {
     syncMode: true,
     converterOpen: false,
     converterPreferences: {},
+    startupEnabled: true,
     timelines: [
       {
         id: '1',

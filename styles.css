@@ -400,6 +400,31 @@ body {
 .settings-footer {
   padding: 12px 16px;
   border-top: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.startup-toggle-container {
+  display: flex;
+  align-items: center;
+}
+
+.startup-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+.startup-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--accent-primary);
 }
 
 /* Timeline setting card */

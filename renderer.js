@@ -580,6 +580,7 @@ async function init() {
 
     renderTimelines();
     renderSettings();
+    setupStartupToggle();
     startClock();
     setupEventListeners();
     setupConverterListeners();
@@ -995,6 +996,20 @@ function startClock() {
   setInterval(updateClocks, 1000);
 }
 
+// Setup startup toggle and load initial state
+async function setupStartupToggle() {
+  const startupToggle = document.getElementById('startupToggle');
+  if (startupToggle) {
+    try {
+      const enabled = await window.electronAPI.getStartupEnabled();
+      startupToggle.checked = enabled;
+    } catch (e) {
+      console.error('Error loading startup state:', e);
+      startupToggle.checked = false;
+    }
+  }
+}
+
 // Render settings panel
 function renderSettings() {
   const content = document.getElementById('settingsContent');
@@ -1173,6 +1188,19 @@ function setupEventListeners() {
 
   // Add timeline button
   document.getElementById('addTimelineBtn').addEventListener('click', addTimeline);
+
+  // Startup toggle
+  const startupToggle = document.getElementById('startupToggle');
+  if (startupToggle) {
+    startupToggle.addEventListener('change', async (e) => {
+      const enabled = e.target.checked;
+      const success = await window.electronAPI.setStartupEnabled(enabled);
+      if (!success) {
+        e.target.checked = !enabled;
+        console.error('Failed to update startup setting');
+      }
+    });
+  }
 
   // Sync button - toggle sync mode
   document.getElementById('syncBtn').addEventListener('click', async () => {

@@ -66,6 +66,37 @@ class SettingsComponent {
     // Add timeline button
     const addBtn = this.#panel.querySelector('#addTimelineBtn');
     addBtn?.addEventListener('click', () => this.addTimeline());
+
+    // Startup toggle
+    const startupToggle = document.getElementById('startupToggle');
+    if (startupToggle) {
+      // Load initial state
+      this.#loadStartupState();
+
+      // Handle toggle changes
+      startupToggle.addEventListener('change', async (e) => {
+        const enabled = e.target.checked;
+        const success = await window.electronAPI.setStartupEnabled(enabled);
+        if (!success) {
+          // Revert if failed
+          e.target.checked = !enabled;
+          console.error('Failed to update startup setting');
+        }
+      });
+    }
+  }
+
+  /**
+   * Load startup toggle state
+   * 
+   * @private
+   */
+  async #loadStartupState() {
+    const startupToggle = document.getElementById('startupToggle');
+    if (startupToggle) {
+      const enabled = await window.electronAPI.getStartupEnabled();
+      startupToggle.checked = enabled;
+    }
   }
 
   /**
@@ -73,6 +104,8 @@ class SettingsComponent {
    */
   open() {
     this.#panel.classList.add('open');
+    // Refresh startup toggle state when opening
+    this.#loadStartupState();
   }
 
   /**

@@ -1,11 +1,18 @@
 const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const AutoLaunch = require('auto-launch');
 
 // Set AppUserModelId for Windows taskbar icon grouping
 if (process.platform === 'win32') {
   app.setAppUserModelId('com.rosetta.app');
 }
+
+// Auto-launch setup
+const autoLauncher = new AutoLaunch({
+  name: 'Rosetta',
+  path: app.getPath('exe'),
+});
 
 let mainWindow;
 let configPath = null;
@@ -32,6 +39,7 @@ function loadConfig() {
     windowBounds: { width: 500, height: 300, x: undefined, y: undefined },
     use24Hour: false,
     converterOpen: false,
+    startupEnabled: true,
     timelines: [
       {
         id: '1',
@@ -135,7 +143,59 @@ ipcMain.on('close-app', () => {
   app.quit();
 });
 
-app.whenReady().then(createWindow);
+ipcMain.handle('get-startup-enabled', async () => {
+  try {
+    const config = loadConfig();
+    // Return saved preference, defaulting to true
+    return config.startupEnabled !== undefined ? config.startupEnabled : true;
+  } catch (e) {
+    console.error('Error checking startup status:', e);
+    return false;
+  }
+});
+
+ipcMain.handle('set-startup-enabled', async (event, enabled) => {
+  try {
+    if (enabled) {
+      await autoLauncher.enable();
+    } else {
+      await autoLauncher.disable();
+    }
+    
+    // Save to config
+    const config = loadConfig();
+    config.startupEnabled = enabled;
+    saveConfig(config);
+    
+    return true;
+  } catch (e) {
+    console.error('Error setting startup:', e);
+    return false;
+  }
+});
+
+app.whenReady().then(async () => {
+  // Enable startup by default on first run
+  const config = loadConfig();
+  if (config.startupEnabled === undefined) {
+    config.startupEnabled = true;
+    saveConfig(config);
+  }
+  
+  // Apply startup setting
+  try {
+    const isEnabled = await autoLauncher.isEnabled();
+    if (config.startupEnabled && !isEnabled) {
+      await autoLauncher.enable();
+    } else if (!config.startupEnabled && isEnabled) {
+      await autoLauncher.disable();
+    }
+  } catch (e) {
+    console.error('Error initializing startup:', e);
+  }
+  
+  createWindow();
+});
 
 app.on('window-all-closed', () => {
   app.quit();

@@ -581,6 +581,7 @@ async function init() {
     renderTimelines();
     renderSettings();
     setupStartupToggle();
+    setupAlwaysOnTopToggle();
     startClock();
     setupEventListeners();
     setupConverterListeners();
@@ -1010,6 +1011,20 @@ async function setupStartupToggle() {
   }
 }
 
+// Setup always on top toggle and load initial state
+async function setupAlwaysOnTopToggle() {
+  const alwaysOnTopToggle = document.getElementById('alwaysOnTopToggle');
+  if (alwaysOnTopToggle) {
+    try {
+      const enabled = await window.electronAPI.getAlwaysOnTop();
+      alwaysOnTopToggle.checked = enabled;
+    } catch (e) {
+      console.error('Error loading alwaysOnTop state:', e);
+      alwaysOnTopToggle.checked = false;
+    }
+  }
+}
+
 // Render settings panel
 function renderSettings() {
   const content = document.getElementById('settingsContent');
@@ -1198,6 +1213,19 @@ function setupEventListeners() {
       if (!success) {
         e.target.checked = !enabled;
         console.error('Failed to update startup setting');
+      }
+    });
+  }
+
+  // Always on top toggle
+  const alwaysOnTopToggle = document.getElementById('alwaysOnTopToggle');
+  if (alwaysOnTopToggle) {
+    alwaysOnTopToggle.addEventListener('change', async (e) => {
+      const enabled = e.target.checked;
+      const success = await window.electronAPI.setAlwaysOnTop(enabled);
+      if (!success) {
+        e.target.checked = !enabled;
+        console.error('Failed to update always on top setting');
       }
     });
   }

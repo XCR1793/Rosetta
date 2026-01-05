@@ -88,7 +88,7 @@ function createWindow() {
     x: x,
     y: y,
     frame: false,
-    alwaysOnTop: true,
+    alwaysOnTop: config.alwaysOnTop || false,
     transparent: false,
     resizable: true,
     minimizable: false,
@@ -170,6 +170,35 @@ ipcMain.handle('set-startup-enabled', async (event, enabled) => {
     return true;
   } catch (e) {
     console.error('Error setting startup:', e);
+    return false;
+  }
+});
+
+ipcMain.handle('get-always-on-top', async () => {
+  try {
+    const config = loadConfig();
+    return config.alwaysOnTop || false;
+  } catch (e) {
+    console.error('Error getting alwaysOnTop:', e);
+    return false;
+  }
+});
+
+ipcMain.handle('set-always-on-top', async (event, enabled) => {
+  try {
+    // Update window immediately
+    if (mainWindow) {
+      mainWindow.setAlwaysOnTop(enabled);
+    }
+    
+    // Save to config
+    const config = loadConfig();
+    config.alwaysOnTop = enabled;
+    saveConfig(config);
+    
+    return true;
+  } catch (e) {
+    console.error('Error setting alwaysOnTop:', e);
     return false;
   }
 });

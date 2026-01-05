@@ -77,7 +77,7 @@ class WindowManager {
       x: x,
       y: y,
       frame: false,
-      alwaysOnTop: true,
+      alwaysOnTop: config.alwaysOnTop || false,
       transparent: false,
       resizable: true,
       minimizable: false,

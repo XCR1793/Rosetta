@@ -47,6 +47,7 @@ class ConfigManager {
     converterOpen: false,
     converterPreferences: {},
     startupEnabled: true,
+    alwaysOnTop: false,
     timelines: [
       {
         id: '1',

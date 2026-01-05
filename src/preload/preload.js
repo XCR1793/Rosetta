@@ -57,5 +57,35 @@ contextBridge.exposeInMainWorld('electronAPI', {
    * @example
    * window.electronAPI.closeApp();
    */
-  closeApp: () => ipcRenderer.send('close-app')
+  closeApp: () => ipcRenderer.send('close-app'),
+
+  /**
+   * Get startup enabled state
+   * 
+   * @returns {Promise<boolean>} True if startup is enabled
+   */
+  getStartupEnabled: () => ipcRenderer.invoke('get-startup-enabled'),
+
+  /**
+   * Set startup enabled state
+   * 
+   * @param {boolean} enabled - Whether startup should be enabled
+   * @returns {Promise<boolean>} True if successful
+   */
+  setStartupEnabled: (enabled) => ipcRenderer.invoke('set-startup-enabled', enabled),
+
+  /**
+   * Get always on top state
+   * 
+   * @returns {Promise<boolean>} True if always on top is enabled
+   */
+  getAlwaysOnTop: () => ipcRenderer.invoke('get-always-on-top'),
+
+  /**
+   * Set always on top state
+   * 
+   * @param {boolean} enabled - Whether always on top should be enabled
+   * @returns {Promise<boolean>} True if successful
+   */
+  setAlwaysOnTop: (enabled) => ipcRenderer.invoke('set-always-on-top', enabled)
 });

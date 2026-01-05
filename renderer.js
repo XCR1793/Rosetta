@@ -1282,15 +1282,15 @@ const PRESET_THEMES = {
     btnBg: '#1e1e1e', btnHover: '#2a2a2a', btnText: '#666666', btnTextHover: '#ffffff'
   },
   night: {
-    bgPrimary: '#1a1a2e', bgSecondary: '#141428', bgTertiary: '#252542',
-    bgInput: '#1a1a2e', bgInputReadonly: '#141428',
-    borderPrimary: '#2d2d50', borderFocus: '#5a5a8a',
-    textPrimary: '#e8e8f0', textSecondary: '#c8c8d8', textMuted: '#8888a8', textDim: '#6666888', textDimmer: '#505070',
-    accentSync: '#7c7cba', accentWork: '#4a4a7a', accentAwake: '#2d2d50', accentSleep: '#141428',
-    accentConverter: '#5a5a8a', accentCompact: '#6a5a7a', accentSuccess: '#4a6a5a', accentDanger: '#ba6a6a', accentHighlight: '#9a9ada',
-    titlebarBg: '#141428', titlebarText: '#8888a8',
-    timelineIndicator: '#7c7cba', timelineBarBg: '#252542',
-    btnBg: '#252542', btnHover: '#353560', btnText: '#6666888', btnTextHover: '#e8e8f0'
+    bgPrimary: '#1a1a2e', bgSecondary: '#12121e', bgTertiary: '#24243a',
+    bgInput: '#1a1a2e', bgInputReadonly: '#12121e',
+    borderPrimary: '#2d2d3a', borderFocus: '#4a9eff',
+    textPrimary: '#f0f0f5', textSecondary: '#d0d0e0', textMuted: '#8888a0', textDim: '#6666888', textDimmer: '#4a4a60',
+    accentSync: '#4a9eff', accentWork: '#5a7aff', accentAwake: '#2d2d3a', accentSleep: '#12121e',
+    accentConverter: '#4a9eff', accentCompact: '#7a6aff', accentSuccess: '#3a8a6a', accentDanger: '#ff5a7a', accentHighlight: '#7ab8ff',
+    titlebarBg: '#12121e', titlebarText: '#8888a0',
+    timelineIndicator: '#4a9eff', timelineBarBg: '#24243a',
+    btnBg: '#24243a', btnHover: '#34344a', btnText: '#6666888', btnTextHover: '#f0f0f5'
   },
   day: {
     bgPrimary: '#f5f5f5', bgSecondary: '#ffffff', bgTertiary: '#e8e8e8',
@@ -1315,15 +1315,15 @@ const PRESET_THEMES = {
     btnBg: '#2a1410', btnHover: '#3a2420', btnText: '#906050', btnTextHover: '#fff0e8'
   },
   astral: {
-    bgPrimary: '#0d0d1a', bgSecondary: '#08081a', bgTertiary: '#1a1a30',
-    bgInput: '#0d0d1a', bgInputReadonly: '#08081a',
-    borderPrimary: '#2a2a4a', borderFocus: '#8a6aff',
-    textPrimary: '#f0f0ff', textSecondary: '#d0d0f0', textMuted: '#8080b0', textDim: '#6060a0', textDimmer: '#404080',
-    accentSync: '#a855f7', accentWork: '#7c3aed', accentAwake: '#1a1a40', accentSleep: '#0a0a20',
-    accentConverter: '#8a6aff', accentCompact: '#6a4aff', accentSuccess: '#4a6a8a', accentDanger: '#f06080', accentHighlight: '#c4b5fd',
-    titlebarBg: '#08081a', titlebarText: '#8080b0',
-    timelineIndicator: '#a855f7', timelineBarBg: '#1a1a30',
-    btnBg: '#1a1a30', btnHover: '#2a2a50', btnText: '#6060a0', btnTextHover: '#f0f0ff'
+    bgPrimary: '#0f0a1a', bgSecondary: '#0a0610', bgTertiary: '#1a1428',
+    bgInput: '#0f0a1a', bgInputReadonly: '#0a0610',
+    borderPrimary: '#2a2438', borderFocus: '#ff6af7',
+    textPrimary: '#f5f0ff', textSecondary: '#e0d8f0', textMuted: '#9888b0', textDim: '#7060a0', textDimmer: '#503a80',
+    accentSync: '#ff6af7', accentWork: '#d055f7', accentAwake: '#2a2438', accentSleep: '#0a0610',
+    accentConverter: '#ff6af7', accentCompact: '#aa55f7', accentSuccess: '#4a7a9a', accentDanger: '#ff4a7a', accentHighlight: '#ffaaff',
+    titlebarBg: '#0a0610', titlebarText: '#9888b0',
+    timelineIndicator: '#ff6af7', timelineBarBg: '#1a1428',
+    btnBg: '#1a1428', btnHover: '#2a243a', btnText: '#7060a0', btnTextHover: '#f5f0ff'
   }
 };
 

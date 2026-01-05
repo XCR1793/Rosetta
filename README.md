@@ -1,90 +1,78 @@
 # Rosetta
 
-A modern, highly customizable world time and schedule visualizer for desktop. Built with Electron, Rosetta lets you compare, sync, and theme multiple timezones with advanced timeline and converter features.
+A lightweight desktop widget for visualizing multiple timezones and converting units. Perfect for remote teams, travelers, and anyone coordinating across time zones.
 
-## Features
-
-- **Multi-TimeZone Timelines:**
-  - Add unlimited timezones, each with custom name, work, sleep, and awake hours
-  - 48-hour timeline bar for each entry (shows two days for context)
-  - Visual schedule blocks: work, awake, sleep
-  - Current time indicator for each timezone
-  - Sync mode: align all timelines to the current time of the first entry
-  - Unsynced mode: all timelines show 12am–12am
-  - Timeline auto-updates every second
-
-- **Theme System:**
-  - 5 built-in presets: Default (black/white/orange), Night, Day, Volcano, Astral
-  - 3 custom theme slots (save your own color schemes)
-  - Live theme editor: adjust 30+ color variables with instant preview
-  - Save/unsaved detection with custom confirmation popup (no libraries)
-  - All UI colors, accents, and timeline visuals are themeable
-
-- **Unit Converter:**
-  - Built-in panel for temperature, currency, length, and weight
-  - Currency rates auto-fetched and display last update time
-  - Swap units, compact layout, and keyboard-friendly
-
-- **Other Features:**
-  - Frameless, draggable window
-  - Compact mode toggle
-  - 12h/24h time toggle
-  - Settings panel for preferences
-  - Custom confirmation popups (no external libraries)
-
-## How to Use
-
-1. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-2. **Run the app:**
-   ```sh
-   npm start
-   ```
-
-## Usage Guide
-
-- **Add/Edit Timelines:**
-  - Use the UI to add new timezones, set names, and adjust work/sleep/awake hours
-  - Drag to reorder timelines
-- **Sync Mode:**
-  - Click the sync button to align all timelines to the current time of the first entry
-  - Click again to unsync (all timelines show 12am–12am)
-- **Theme Editor:**
-  - Click the palette button to open the theme editor
-  - Choose a preset or edit colors live
-  - Save to store your custom theme
-- **Converter:**
-  - Open the converter panel to convert between temperature, currency, length, and weight
-  - Currency rates update automatically
-
-## Project Structure
-
-- `index.html` — Main UI
-- `renderer.js` — All frontend logic (timelines, theming, converter, etc.)
-- `styles.css` — Unified CSS variable system and all styles
-- `main.js`, `preload.js`, `launch.js` — Electron app entrypoints
-- `package.json` — Project config
-
-## How to Run (Development)
-
-1. **Install Node.js** (v18+ recommended)
-2. **Install dependencies:**
-   ```sh
-   npm install
-   ```
-3. **Start the app:**
-   ```sh
-   npm start
-   ```
-
-## Title & Description
-
-**Rosetta** — World Time Visualizer & Themeable Timeline App
-
-A powerful, themeable desktop app for comparing, syncing, and visualizing world time schedules. Perfect for remote teams, travelers, and anyone working across timezones.
+![Platform](https://img.shields.io/badge/Platform-Windows-blue) ![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
-For advanced configuration or troubleshooting, see the comments in `renderer.js` and `styles.css`.
+## ⬇️ Download
+
+**Setup file location:** `dist/Rosetta Setup 1.0.0.exe`
+
+**Portable version:** `dist/Rosetta-win32-x64/Rosetta.exe`
+
+---
+
+## Features
+
+### 🕐 Multi-Timezone Timelines
+- Add unlimited timezone entries with custom names
+- 48-hour visual timeline bar showing two days of context
+- Color-coded schedule blocks for work, awake, and sleep hours
+- Real-time current time indicator for each timezone
+- Sync mode to align all timelines to a reference time
+
+### 🎨 Theme System
+- 5 built-in presets: Default, Night, Day, Volcano, Astral
+- 3 custom theme slots to save your own color schemes
+- Live theme editor with 30+ customizable colors
+- Instant preview as you adjust
+
+### 🔄 Unit Converter
+- Temperature (Celsius, Fahrenheit, Kelvin)
+- Currency with auto-updated exchange rates
+- Length (metric and imperial)
+- Weight (metric and imperial)
+
+### ⚡ Desktop Widget
+- Frameless, always-on-top window
+- Draggable from anywhere
+- Compact mode toggle
+- 12h/24h time display
+- Remembers position and size
+
+---
+
+## Installation
+
+### Quick Install
+1. Run `dist/Rosetta Setup 1.0.0.exe`
+2. Follow the installer prompts
+3. Launch from Start Menu or Desktop
+
+### Portable
+Run `dist/Rosetta-win32-x64/Rosetta.exe` directly — no installation needed.
+
+---
+
+## Development
+
+```bash
+git clone https://github.com/XCR1793/Rosetta.git
+cd Rosetta
+npm install
+npm start
+```
+
+### Build Commands
+```bash
+npm run build      # Create installer
+npm run package    # Create portable version
+```
+
+---
+
+## License
+
+MIT

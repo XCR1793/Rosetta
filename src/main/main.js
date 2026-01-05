@@ -18,6 +18,11 @@ const { app, BrowserWindow } = require('electron');
 const { ConfigManager, WindowManager } = require('./services');
 const { AppController } = require('./controllers');
 
+// Set AppUserModelId for Windows taskbar icon grouping
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.rosetta.app');
+}
+
 /**
  * @class Application
  * @description

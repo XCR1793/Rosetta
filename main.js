@@ -1,6 +1,11 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
+
+// Set AppUserModelId for Windows taskbar icon grouping
+if (process.platform === 'win32') {
+  app.setAppUserModelId('com.rosetta.app');
+}
 
 let mainWindow;
 let configPath = null;
@@ -62,6 +67,13 @@ function createWindow() {
   const config = loadConfig();
   const { width, height, x, y } = config.windowBounds;
 
+  // Determine icon path - different for dev vs production
+  const iconPath = app.isPackaged 
+    ? path.join(process.resourcesPath, 'Logo.ico')
+    : path.join(__dirname, 'Logo.ico');
+
+  const icon = nativeImage.createFromPath(iconPath);
+
   mainWindow = new BrowserWindow({
     width: width,
     height: height,
@@ -75,12 +87,18 @@ function createWindow() {
     maximizable: false,
     skipTaskbar: false,
     backgroundColor: '#1a1a2e',
+    icon: icon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     }
   });
+
+  // Explicitly set the icon for Windows taskbar
+  if (process.platform === 'win32') {
+    mainWindow.setIcon(icon);
+  }
 
   mainWindow.loadFile('index.html');
 

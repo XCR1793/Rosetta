@@ -15,7 +15,7 @@
  * @since 1.0.0
  */
 
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, app, nativeImage } = require('electron');
 const path = require('path');
 
 /**
@@ -64,6 +64,13 @@ class WindowManager {
     const config = this.#configManager.loadConfig();
     const { width, height, x, y } = config.windowBounds;
 
+    // Determine icon path - different for dev vs production
+    const iconPath = app.isPackaged 
+      ? path.join(process.resourcesPath, 'Logo.ico')
+      : path.join(__dirname, '..', '..', '..', 'Logo.ico');
+
+    const icon = nativeImage.createFromPath(iconPath);
+
     this.#mainWindow = new BrowserWindow({
       width: width,
       height: height,
@@ -77,12 +84,18 @@ class WindowManager {
       maximizable: false,
       skipTaskbar: false,
       backgroundColor: '#1a1a2e',
+      icon: icon,
       webPreferences: {
         preload: path.join(__dirname, '..', '..', 'preload', 'preload.js'),
         contextIsolation: true,
         nodeIntegration: false
       }
     });
+
+    // Explicitly set the icon for Windows taskbar
+    if (process.platform === 'win32') {
+      this.#mainWindow.setIcon(icon);
+    }
 
     // Load the main HTML file
     this.#mainWindow.loadFile(path.join(__dirname, '..', '..', '..', 'index.html'));

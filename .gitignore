@@ -1,3 +1,4 @@
 # Ignore build output directory
 dist/
 node_modules/
+ARCHITECTURE.md

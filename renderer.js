@@ -249,10 +249,29 @@ function ensureTimelineCards() {
 
     card.dataset.id = person.id;
     card.dataset.timezone = person.resolvedTimezone || person.timezone || 'UTC';
+    const schedule = personSchedule(person);
+    card.dataset.wakeTime = schedule.wakeTime;
+    card.dataset.sleepTime = schedule.sleepTime;
+    card.dataset.workStart = schedule.workStart;
+    card.dataset.workEnd = schedule.workEnd;
     card.querySelector('.person-card__name').textContent = person.name;
-    renderScheduleBands(card.querySelector('.timeline__schedule'), personSchedule(person));
+    renderScheduleBands(card.querySelector('.timeline__schedule'), schedule);
     peopleTimelines.appendChild(card);
   });
+}
+
+function cardSchedule(card) {
+  return PerchSchedule.normalizeSchedule({
+    wakeTime: card.dataset.wakeTime,
+    sleepTime: card.dataset.sleepTime,
+    workStart: card.dataset.workStart,
+    workEnd: card.dataset.workEnd
+  });
+}
+
+function applyPresenceUi(card, presence) {
+  card.classList.toggle('person-card--sleeping', presence === 'sleep');
+  card.classList.toggle('person-card--off-hours', presence === 'away');
 }
 
 function updateTimelineCards() {
@@ -268,6 +287,10 @@ function updateTimelineCards() {
     card.querySelector('.person-card__time').textContent = parts.time;
     card.querySelector('.person-card__date').textContent = parts.date;
     card.querySelector('.timeline__marker').style.left = `${parts.progress * 100}%`;
+    applyPresenceUi(
+      card,
+      PerchSchedule.schedulePresence(cardSchedule(card), parts.progress)
+    );
   });
 }
 

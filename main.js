@@ -1,94 +1,23 @@
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
+const { app, BrowserWindow, nativeImage } = require('electron');
 const path = require('path');
-const fs = require('fs');
-const AutoLaunch = require('auto-launch');
 
-// Set AppUserModelId for Windows taskbar icon grouping
 if (process.platform === 'win32') {
   app.setAppUserModelId('com.rosetta.app');
 }
 
-// Auto-launch setup
-const autoLauncher = new AutoLaunch({
-  name: 'Rosetta',
-  path: app.getPath('exe'),
-});
-
 let mainWindow;
-let configPath = null;
-
-function getConfigPath() {
-  if (!configPath) {
-    configPath = path.join(app.getPath('userData'), 'config.json');
-  }
-  return configPath;
-}
-
-function loadConfig() {
-  try {
-    const cfgPath = getConfigPath();
-    if (fs.existsSync(cfgPath)) {
-      return JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
-    }
-  } catch (e) {
-    console.error('Error loading config:', e);
-  }
-
-  // Default config
-  return {
-    windowBounds: { width: 500, height: 300, x: undefined, y: undefined },
-    use24Hour: false,
-    converterOpen: false,
-    startupEnabled: true,
-    timelines: [
-      {
-        id: '1',
-        name: 'You',
-        timezone: 'Australia/Sydney',
-        wakeTime: '07:00',
-        sleepTime: '23:00',
-        workStart: '09:00',
-        workEnd: '17:00'
-      },
-      {
-        id: '2',
-        name: 'Colleague',
-        timezone: 'America/Chicago',
-        wakeTime: '07:00',
-        sleepTime: '23:00',
-        workStart: '09:00',
-        workEnd: '17:00'
-      }
-    ]
-  };
-}
-
-function saveConfig(config) {
-  try {
-    fs.writeFileSync(getConfigPath(), JSON.stringify(config, null, 2));
-  } catch (e) {
-    console.error('Error saving config:', e);
-  }
-}
 
 function createWindow() {
-  const config = loadConfig();
-  const { width, height, x, y } = config.windowBounds;
-
-  // Determine icon path - different for dev vs production
-  const iconPath = app.isPackaged 
+  const iconPath = app.isPackaged
     ? path.join(process.resourcesPath, 'Logo.ico')
     : path.join(__dirname, 'Logo.ico');
-
   const icon = nativeImage.createFromPath(iconPath);
 
   mainWindow = new BrowserWindow({
-    width: width,
-    height: height,
-    x: x,
-    y: y,
+    width: 500,
+    height: 300,
     frame: false,
-    alwaysOnTop: config.alwaysOnTop || false,
+    alwaysOnTop: false,
     transparent: false,
     resizable: true,
     minimizable: false,
@@ -103,128 +32,14 @@ function createWindow() {
     }
   });
 
-  // Explicitly set the icon for Windows taskbar
   if (process.platform === 'win32') {
     mainWindow.setIcon(icon);
   }
 
   mainWindow.loadFile('index.html');
-
-  // Open DevTools for debugging (can be removed in production)
-  // mainWindow.webContents.openDevTools({ mode: 'detach' });
-
-  // Save window position on move/resize
-  mainWindow.on('moved', () => {
-    const bounds = mainWindow.getBounds();
-    const config = loadConfig();
-    config.windowBounds = bounds;
-    saveConfig(config);
-  });
-
-  mainWindow.on('resized', () => {
-    const bounds = mainWindow.getBounds();
-    const config = loadConfig();
-    config.windowBounds = bounds;
-    saveConfig(config);
-  });
 }
 
-// IPC handlers
-ipcMain.handle('get-config', () => {
-  return loadConfig();
-});
-
-ipcMain.handle('save-config', (event, config) => {
-  saveConfig(config);
-  return true;
-});
-
-ipcMain.on('close-app', () => {
-  app.quit();
-});
-
-ipcMain.handle('get-startup-enabled', async () => {
-  try {
-    const config = loadConfig();
-    // Return saved preference, defaulting to true
-    return config.startupEnabled !== undefined ? config.startupEnabled : true;
-  } catch (e) {
-    console.error('Error checking startup status:', e);
-    return false;
-  }
-});
-
-ipcMain.handle('set-startup-enabled', async (event, enabled) => {
-  try {
-    if (enabled) {
-      await autoLauncher.enable();
-    } else {
-      await autoLauncher.disable();
-    }
-    
-    // Save to config
-    const config = loadConfig();
-    config.startupEnabled = enabled;
-    saveConfig(config);
-    
-    return true;
-  } catch (e) {
-    console.error('Error setting startup:', e);
-    return false;
-  }
-});
-
-ipcMain.handle('get-always-on-top', async () => {
-  try {
-    const config = loadConfig();
-    return config.alwaysOnTop || false;
-  } catch (e) {
-    console.error('Error getting alwaysOnTop:', e);
-    return false;
-  }
-});
-
-ipcMain.handle('set-always-on-top', async (event, enabled) => {
-  try {
-    // Update window immediately
-    if (mainWindow) {
-      mainWindow.setAlwaysOnTop(enabled);
-    }
-    
-    // Save to config
-    const config = loadConfig();
-    config.alwaysOnTop = enabled;
-    saveConfig(config);
-    
-    return true;
-  } catch (e) {
-    console.error('Error setting alwaysOnTop:', e);
-    return false;
-  }
-});
-
-app.whenReady().then(async () => {
-  // Enable startup by default on first run
-  const config = loadConfig();
-  if (config.startupEnabled === undefined) {
-    config.startupEnabled = true;
-    saveConfig(config);
-  }
-  
-  // Apply startup setting
-  try {
-    const isEnabled = await autoLauncher.isEnabled();
-    if (config.startupEnabled && !isEnabled) {
-      await autoLauncher.enable();
-    } else if (!config.startupEnabled && isEnabled) {
-      await autoLauncher.disable();
-    }
-  } catch (e) {
-    console.error('Error initializing startup:', e);
-  }
-  
-  createWindow();
-});
+app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => {
   app.quit();

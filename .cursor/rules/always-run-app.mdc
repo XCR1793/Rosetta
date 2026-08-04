@@ -1,0 +1,15 @@
+---
+description: Always run or restart Rosetta after code changes so the user can watch and debug live
+alwaysApply: true
+---
+
+# Always Run / Rerun The App
+
+The user watches and debugs Rosetta live. After any change that affects the running app:
+
+1. **Restart Electron** — kill any existing Rosetta/`electron .` process, then start fresh with `npm start` (or `npm run dev`).
+2. **Do this at the end of the change set** — not mid-edit if more related edits are coming; once the batch is done, relaunch immediately.
+3. **Run in the background** — do not block the chat waiting on the GUI process.
+4. **Applies to** main process, preload, renderer, HTML, CSS, and `package.json` script/dependency changes that affect startup.
+
+Skip relaunch only when the change cannot affect the running app (e.g. docs-only, `.cursor/rules`, unused assets).

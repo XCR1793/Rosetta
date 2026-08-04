@@ -5,14 +5,11 @@
   "main": "main.js",
   "scripts": {
     "start": "node launch.js",
-    "start:src": "electron src/main/main.js",
     "dev": "electron .",
     "build": "electron-builder --win && node set-icon.js",
     "package": "electron-packager . Rosetta --platform=win32 --arch=x64 --out=dist --overwrite --icon=Logo.ico",
     "postpackage": "node set-icon.js",
-    "set-icon": "node set-icon.js",
-    "lint": "echo 'Linting...'",
-    "test": "echo 'No tests configured'"
+    "set-icon": "node set-icon.js"
   },
   "author": "",
   "license": "MIT",
@@ -70,10 +67,10 @@
       "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
       "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
       "!**/{appveyor.yml,.travis.yml,circle.yml}",
-      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
+      "!Documentation (Perch)/**",
+      "!ARCHITECTURE.md"
     ]
   },
-  "dependencies": {
-    "auto-launch": "^5.0.6"
-  }
+  "dependencies": {}
 }

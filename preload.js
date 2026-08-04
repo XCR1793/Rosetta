@@ -23,6 +23,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('get-timezones-for-location', country, state),
   getCurrencyForCountry: (country) =>
     ipcRenderer.invoke('get-currency-for-country', country),
+  getExchangeRate: (from, to, force = false) =>
+    ipcRenderer.invoke('get-exchange-rate', from, to, force),
+  getPanelState: () => ipcRenderer.invoke('panel-get-state'),
+  setPanelExpanded: (expanded, direction) =>
+    ipcRenderer.invoke('panel-set-expanded', { expanded, direction }),
+  getPrefs: () => ipcRenderer.invoke('prefs-get'),
+  setPrefs: (patch) => ipcRenderer.invoke('prefs-set', patch),
   openPeopleConfig: () => ipcRenderer.send('open-people-config'),
   onMaximizedChange: (callback) => {
     const listener = (_event, maximized) => callback(maximized);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://api.frankfurter.app https://open.er-api.com">
   <title>Perch</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,6 +29,18 @@
                 <path fill="currentColor" d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.31-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/>
               </svg>
             </button>
+            <button
+              class="title-btn convert-btn neo-surface neo-surface--circle"
+              id="convertBtn"
+              title="Currency convert"
+              type="button"
+              aria-label="Currency convert"
+              aria-pressed="false"
+            >
+              <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                <path fill="currentColor" d="M21 9l-4-4v3H10v2h7v3l4-4zm-4 6v-3H7v-3l-4 4 4 4v-3h10z"/>
+              </svg>
+            </button>
           </div>
           <div class="title-bar-drag"></div>
           <div class="title-bar-right">
@@ -46,88 +58,157 @@
       </div>
     </header>
 
-    <main class="content">
-      <section class="view view-home" id="homeView">
-        <div class="people-timelines" id="peopleTimelines"></div>
-      </section>
-      <section class="view view-settings" id="settingsView" hidden>
-        <div class="settings-panel">
-          <button class="settings-row settings-row--action" id="openPeopleConfigBtn" type="button">
-            <div class="settings-row__text">
-              <span class="settings-row__label">People &amp; timezones</span>
-              <span class="settings-row__hint">Open the larger profile editor</span>
-            </div>
-            <span class="settings-row__chevron" aria-hidden="true">›</span>
-          </button>
-
-          <div class="settings-row">
-            <div class="settings-row__text">
-              <span class="settings-row__label">Appearance</span>
-              <span class="settings-row__hint" id="themeHint">Light mode</span>
-            </div>
-            <button
-              class="theme-switch"
-              id="themeSwitch"
-              type="button"
-              role="switch"
-              aria-checked="false"
-              aria-label="Dark mode"
-              title="Toggle light / dark mode"
-            >
-              <span class="theme-switch__track neo-surface neo-surface--dip neo-surface--pill">
-                <span class="theme-switch__thumb neo-surface neo-surface--raise neo-surface--circle" aria-hidden="true"></span>
-              </span>
+    <main class="content" id="contentShell" data-panel-dir="right">
+      <div class="content-primary">
+        <section class="view view-home" id="homeView">
+          <div class="people-timelines" id="peopleTimelines"></div>
+        </section>
+        <section class="view view-settings" id="settingsView" hidden>
+          <div class="settings-panel">
+            <button class="settings-row settings-row--action" id="openPeopleConfigBtn" type="button">
+              <div class="settings-row__text">
+                <span class="settings-row__label">People &amp; timezones</span>
+                <span class="settings-row__hint">Open the larger profile editor</span>
+              </div>
+              <span class="settings-row__chevron" aria-hidden="true">›</span>
             </button>
-          </div>
 
-          <div class="settings-row">
-            <div class="settings-row__text">
-              <span class="settings-row__label">Accent colour</span>
-              <span class="settings-row__hint" id="accentHint">Auto</span>
-            </div>
-            <div class="accent-controls">
-              <button class="accent-auto-btn" id="accentAutoBtn" type="button" aria-pressed="true">
-                Auto
+            <div class="settings-row">
+              <div class="settings-row__text">
+                <span class="settings-row__label">Appearance</span>
+                <span class="settings-row__hint" id="themeHint">Light mode</span>
+              </div>
+              <button
+                class="theme-switch"
+                id="themeSwitch"
+                type="button"
+                role="switch"
+                aria-checked="false"
+                aria-label="Dark mode"
+                title="Toggle light / dark mode"
+              >
+                <span class="theme-switch__track neo-surface neo-surface--dip neo-surface--pill">
+                  <span class="theme-switch__thumb neo-surface neo-surface--raise neo-surface--circle" aria-hidden="true"></span>
+                </span>
               </button>
-              <label class="accent-swatch neo-surface neo-surface--dip neo-surface--circle" title="Pick accent colour">
-                <input class="accent-swatch__input" id="accentColorInput" type="color" value="#0078d4" aria-label="Accent colour">
-                <span class="accent-swatch__fill" id="accentSwatchFill" aria-hidden="true"></span>
-              </label>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-row__text">
+                <span class="settings-row__label">Accent colour</span>
+                <span class="settings-row__hint" id="accentHint">Auto</span>
+              </div>
+              <div class="accent-controls">
+                <button class="accent-auto-btn" id="accentAutoBtn" type="button" aria-pressed="true">
+                  Auto
+                </button>
+                <label class="accent-swatch neo-surface neo-surface--dip neo-surface--circle" title="Pick accent colour">
+                  <input class="accent-swatch__input" id="accentColorInput" type="color" value="#0078d4" aria-label="Accent colour">
+                  <span class="accent-swatch__fill" id="accentSwatchFill" aria-hidden="true"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-row__text">
+                <span class="settings-row__label">Time format</span>
+                <span class="settings-row__hint" id="hourFormatHint">24-hour</span>
+              </div>
+              <div class="segmented" role="group" aria-label="Time format">
+                <button class="segmented__btn" id="hourFormat12Btn" type="button" data-hour-format="12">12h</button>
+                <button class="segmented__btn" id="hourFormat24Btn" type="button" data-hour-format="24">24h</button>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-row__text">
+                <span class="settings-row__label">Convert panel</span>
+                <span class="settings-row__hint" id="panelDirHint">Expands right</span>
+              </div>
+              <div class="segmented" role="group" aria-label="Convert panel direction">
+                <button class="segmented__btn" id="panelDirLeftBtn" type="button" data-panel-dir="left">Left</button>
+                <button class="segmented__btn" id="panelDirRightBtn" type="button" data-panel-dir="right">Right</button>
+                <button class="segmented__btn" id="panelDirDownBtn" type="button" data-panel-dir="down">Down</button>
+              </div>
+            </div>
+
+            <div class="settings-row">
+              <div class="settings-row__text">
+                <span class="settings-row__label">Scale</span>
+                <span class="settings-row__hint" id="scaleHint">100%</span>
+              </div>
+              <div class="scale-controls">
+                <select class="scale-select neo-surface neo-surface--dip neo-surface--pill" id="scaleSelect" aria-label="App scale">
+                  <option value="75">75%</option>
+                  <option value="90">90%</option>
+                  <option value="100" selected>100% (Default)</option>
+                  <option value="110">110%</option>
+                  <option value="125">125%</option>
+                  <option value="150">150%</option>
+                </select>
+              </div>
             </div>
           </div>
+        </section>
+      </div>
 
-          <div class="settings-row">
-            <div class="settings-row__text">
-              <span class="settings-row__label">Time format</span>
-              <span class="settings-row__hint" id="hourFormatHint">24-hour</span>
-            </div>
-            <div class="segmented" role="group" aria-label="Time format">
-              <button class="segmented__btn" id="hourFormat12Btn" type="button" data-hour-format="12">12h</button>
-              <button class="segmented__btn" id="hourFormat24Btn" type="button" data-hour-format="24">24h</button>
-            </div>
-          </div>
-
-          <div class="settings-row">
-            <div class="settings-row__text">
-              <span class="settings-row__label">Scale</span>
-              <span class="settings-row__hint" id="scaleHint">100%</span>
-            </div>
-            <div class="scale-controls">
-              <select class="scale-select neo-surface neo-surface--dip neo-surface--pill" id="scaleSelect" aria-label="App scale">
-                <option value="75">75%</option>
-                <option value="90">90%</option>
-                <option value="100" selected>100% (Default)</option>
-                <option value="110">110%</option>
-                <option value="125">125%</option>
-                <option value="150">150%</option>
-              </select>
-            </div>
+      <aside class="convert-panel neo-surface neo-surface--dip neo-surface--rounded" id="convertPanel" hidden>
+        <div class="convert-panel__head">
+          <div class="convert-panel__title">Convert</div>
+          <div class="convert-rate" id="convertRateBox">
+            <div class="convert-rate__line" id="convertRateLine">Fetching rate…</div>
+            <div class="convert-rate__sub" id="convertRateUpdated">—</div>
           </div>
         </div>
-      </section>
+
+        <div class="convert-row">
+          <label class="convert-field">
+            <span class="convert-field__meta">
+              <span class="convert-field__role">From</span>
+              <span class="convert-field__who" id="convertFromWho">—</span>
+              <select class="convert-field__code" id="convertFromCode" aria-label="From currency"></select>
+            </span>
+            <input
+              class="convert-field__input neo-surface neo-surface--dip neo-surface--rounded"
+              id="convertFromAmount"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              spellcheck="false"
+              value="1"
+            >
+          </label>
+
+          <div class="convert-swap" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <path fill="currentColor" d="M21 9l-4-4v3H10v2h7v3l4-4zm-4 6v-3H7v-3l-4 4 4 4v-3h10z"/>
+            </svg>
+          </div>
+
+          <label class="convert-field">
+            <span class="convert-field__meta">
+              <span class="convert-field__role">To</span>
+              <span class="convert-field__who" id="convertToWho">—</span>
+              <select class="convert-field__code" id="convertToCode" aria-label="To currency"></select>
+            </span>
+            <input
+              class="convert-field__input neo-surface neo-surface--dip neo-surface--rounded"
+              id="convertToAmount"
+              type="text"
+              inputmode="decimal"
+              autocomplete="off"
+              spellcheck="false"
+              value=""
+            >
+          </label>
+        </div>
+
+        <p class="convert-hint">Name = From / To. Currency chips: pick to override, Auto to restore.</p>
+      </aside>
     </main>
   </div>
   <script src="lib/schedule.js"></script>
+  <script src="convert-ui.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

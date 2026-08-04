@@ -51,14 +51,21 @@
     ],
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Perch",
-      "runAfterFinish": false,
-      "installerHeader": "Logo.ico",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "license": "LICENSE",
+      "installerIcon": "Logo.ico",
+      "uninstallerIcon": "Logo.ico",
+      "installerHeaderIcon": "Logo.ico",
       "include": "scripts/installer.nsh",
-      "deleteAppDataOnUninstall": false
+      "uninstallDisplayName": "Perch",
+      "artifactName": "Perch Setup ${version}.${ext}"
     },
     "files": [
       "**/*",

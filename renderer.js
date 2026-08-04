@@ -26,6 +26,8 @@ const ACCENT_MODE_KEY = 'perch.accentMode';
 const ACCENT_COLOR_KEY = 'perch.accentColor';
 const SCALE_KEY = 'perch.scale';
 const HOUR_FORMAT_KEY = 'perch.hourFormat';
+const SYNC_ENABLED_KEY = 'perch.syncEnabled';
+const SYNC_PERSON_KEY = 'perch.syncPersonId';
 const FALLBACK_ACCENT = '#0078d4';
 const SCALE_OPTIONS = [75, 90, 100, 110, 125, 150];
 
@@ -36,6 +38,8 @@ let manualAccent = normalizeHex(localStorage.getItem(ACCENT_COLOR_KEY) || FALLBA
 let activeAccent = FALLBACK_ACCENT;
 let scalePercent = readStoredScale();
 let hourFormat = localStorage.getItem(HOUR_FORMAT_KEY) === '12' ? '12' : '24';
+let syncEnabled = localStorage.getItem(SYNC_ENABLED_KEY) === 'true';
+let syncPersonId = localStorage.getItem(SYNC_PERSON_KEY) || '';
 let people = [];
 let tickTimer = null;
 
@@ -84,8 +88,69 @@ function setHourFormat(format) {
   hourFormat12Btn.classList.toggle('active', hourFormat === '12');
   hourFormat24Btn.classList.toggle('active', hourFormat === '24');
   hourFormatHint.textContent = hourFormat === '12' ? '12-hour' : '24-hour';
-  refreshTimelineLabels();
+  refreshTimelineLabelText();
   updateTimelineCards();
+}
+
+function ensureSyncTarget() {
+  if (!people.length) {
+    syncEnabled = false;
+    syncPersonId = '';
+    localStorage.setItem(SYNC_ENABLED_KEY, 'false');
+    localStorage.setItem(SYNC_PERSON_KEY, '');
+    return;
+  }
+
+  if (!people.some((person) => person.id === syncPersonId)) {
+    syncPersonId = people[0].id;
+    localStorage.setItem(SYNC_PERSON_KEY, syncPersonId);
+  }
+
+  if (syncEnabled) {
+    localStorage.setItem(SYNC_ENABLED_KEY, 'true');
+  }
+}
+
+function setSyncEnabled(enabled) {
+  syncEnabled = Boolean(enabled) && people.length > 0;
+  localStorage.setItem(SYNC_ENABLED_KEY, String(syncEnabled));
+  updateTimelineCards();
+}
+
+function toggleSyncForPerson(id) {
+  if (!people.some((person) => person.id === id)) return;
+
+  if (syncEnabled && syncPersonId === id) {
+    setSyncEnabled(false);
+    return;
+  }
+
+  syncPersonId = id;
+  localStorage.setItem(SYNC_PERSON_KEY, syncPersonId);
+  setSyncEnabled(true);
+}
+
+function getZoneProgress(timeZone) {
+  try {
+    return getZonedParts(timeZone).progress;
+  } catch (_) {
+    return getZonedParts('UTC').progress;
+  }
+}
+
+function getSyncReferenceProgress() {
+  if (!syncEnabled || !people.length) return null;
+  const reference =
+    people.find((person) => person.id === syncPersonId) || people[0];
+  if (!reference) return null;
+  const zone = reference.resolvedTimezone || reference.timezone || 'UTC';
+  return getZoneProgress(zone);
+}
+
+/** Shift so this person's now lines up with the reference marker (looping). */
+function timelineShiftFor(progress, referenceProgress) {
+  if (referenceProgress == null) return 0;
+  return PerchSchedule.wrapUnit(progress - referenceProgress);
 }
 
 function accentInkFor(hex) {
@@ -191,11 +256,10 @@ function formatHourLabel(hour) {
   return PerchSchedule.formatHourLabel(hour);
 }
 
-function refreshTimelineLabels() {
-  peopleTimelines.querySelectorAll('.timeline__label').forEach((label, index) => {
-    // Labels are created every 3 hours: 0,3,6,...,21
-    const hour = (index % 8) * 3;
-    label.textContent = formatHourLabel(hour);
+function refreshTimelineLabelText() {
+  peopleTimelines.querySelectorAll('.timeline__label').forEach((label) => {
+    const hour = Number(label.dataset.hour);
+    if (Number.isFinite(hour)) label.textContent = formatHourLabel(hour);
   });
 }
 
@@ -203,10 +267,10 @@ function personSchedule(person) {
   return PerchSchedule.normalizeSchedule(person || {});
 }
 
-function renderScheduleBands(container, schedule) {
+function renderScheduleBands(container, schedule, shift = 0) {
   if (!container) return;
   container.innerHTML = '';
-  const bands = PerchSchedule.scheduleBands(schedule);
+  const bands = PerchSchedule.scheduleBands(schedule, shift);
 
   for (const range of bands.sleep) {
     const band = document.createElement('div');
@@ -225,6 +289,35 @@ function renderScheduleBands(container, schedule) {
   }
 }
 
+function applyTrackShift(trackStrip, shift) {
+  if (!trackStrip) return;
+  // 200%-wide dual day strip: negative left reveals later hours (loops into copy 2).
+  trackStrip.style.left = `${-PerchSchedule.wrapUnit(shift) * 100}%`;
+}
+
+function applyTimelineShift(card, shift) {
+  card.querySelectorAll('.timeline__hour').forEach((tick) => {
+    const hour = Number(tick.dataset.hour);
+    const visual = PerchSchedule.wrapUnit(hour / 24 - shift);
+    tick.style.left = `${visual * 100}%`;
+  });
+
+  card.querySelectorAll('.timeline__label').forEach((label) => {
+    const hour = Number(label.dataset.hour);
+    const visual = PerchSchedule.wrapUnit(hour / 24 - shift);
+    label.style.left = `${visual * 100}%`;
+    label.classList.toggle('timeline__label--start', visual < 0.035);
+    label.textContent = formatHourLabel(hour);
+  });
+
+  applyTrackShift(card.querySelector('.timeline__track-strip'), shift);
+  renderScheduleBands(
+    card.querySelector('.timeline__schedule'),
+    cardSchedule(card),
+    PerchSchedule.wrapUnit(-shift)
+  );
+}
+
 function fillTimelineScaffold(hoursEl, labelsEl) {
   hoursEl.innerHTML = '';
   labelsEl.innerHTML = '';
@@ -232,6 +325,7 @@ function fillTimelineScaffold(hoursEl, labelsEl) {
   for (let hour = 0; hour < 24; hour += 1) {
     const tick = document.createElement('span');
     tick.className = `timeline__hour${hour % 3 === 0 ? ' timeline__hour--major' : ''}`;
+    tick.dataset.hour = String(hour);
     tick.style.left = `${(hour / 24) * 100}%`;
     tick.setAttribute('aria-hidden', 'true');
     hoursEl.appendChild(tick);
@@ -240,6 +334,7 @@ function fillTimelineScaffold(hoursEl, labelsEl) {
   for (let hour = 0; hour < 24; hour += 3) {
     const label = document.createElement('span');
     label.className = 'timeline__label' + (hour === 0 ? ' timeline__label--start' : '');
+    label.dataset.hour = String(hour);
     label.style.left = `${(hour / 24) * 100}%`;
     label.textContent = formatHourLabel(hour);
     labelsEl.appendChild(label);
@@ -258,14 +353,17 @@ function ensureTimelineCards() {
 
   people.forEach((person) => {
     let card = existing.get(person.id);
+    if (card && !card.querySelector('button.person-card__name')) {
+      card = null;
+    }
     if (!card) {
       card = document.createElement('article');
       card.className = 'person-card';
       card.innerHTML = `
-        <div class="person-card__name"></div>
+        <button class="person-card__name" type="button"></button>
         <div class="timeline-block">
           <div class="timeline neo-surface neo-surface--dip neo-surface--pill">
-            <div class="timeline__track"></div>
+            <div class="timeline__track"><div class="timeline__track-strip"></div></div>
             <div class="timeline__schedule"></div>
             <div class="timeline__hours"></div>
             <div class="timeline__marker"></div>
@@ -282,6 +380,10 @@ function ensureTimelineCards() {
         card.querySelector('.timeline__hours'),
         card.querySelector('.timeline__labels')
       );
+
+      card.querySelector('.person-card__name').addEventListener('click', () => {
+        toggleSyncForPerson(card.dataset.id);
+      });
     }
 
     card.dataset.id = person.id;
@@ -291,10 +393,17 @@ function ensureTimelineCards() {
     card.dataset.sleepTime = schedule.sleepTime;
     card.dataset.workStart = schedule.workStart;
     card.dataset.workEnd = schedule.workEnd;
-    card.querySelector('.person-card__name').textContent = person.name;
-    renderScheduleBands(card.querySelector('.timeline__schedule'), schedule);
+    const nameBtn = card.querySelector('.person-card__name');
+    nameBtn.textContent = person.name;
+    nameBtn.title = 'Click to sync timelines to this person';
+    nameBtn.setAttribute(
+      'aria-pressed',
+      String(syncEnabled && syncPersonId === person.id)
+    );
     peopleTimelines.appendChild(card);
   });
+
+  ensureSyncTarget();
 }
 
 function cardSchedule(card) {
@@ -312,6 +421,8 @@ function applyPresenceUi(card, presence) {
 }
 
 function updateTimelineCards() {
+  const referenceProgress = getSyncReferenceProgress();
+
   peopleTimelines.querySelectorAll('.person-card').forEach((card) => {
     const zone = card.dataset.timezone || 'UTC';
     let parts;
@@ -321,9 +432,28 @@ function updateTimelineCards() {
       parts = getZonedParts('UTC');
     }
 
+    const shift = timelineShiftFor(parts.progress, referenceProgress);
+    const markerPos = PerchSchedule.wrapUnit(parts.progress - shift);
+
     card.querySelector('.person-card__time').textContent = parts.time;
     card.querySelector('.person-card__date').textContent = parts.date;
-    card.querySelector('.timeline__marker').style.left = `${parts.progress * 100}%`;
+    card.querySelector('.timeline__marker').style.left = `${markerPos * 100}%`;
+    applyTimelineShift(card, shift);
+    card.classList.toggle(
+      'person-card--sync-target',
+      syncEnabled && card.dataset.id === syncPersonId
+    );
+    const nameBtn = card.querySelector('.person-card__name');
+    if (nameBtn) {
+      nameBtn.setAttribute(
+        'aria-pressed',
+        String(syncEnabled && card.dataset.id === syncPersonId)
+      );
+      nameBtn.title =
+        syncEnabled && card.dataset.id === syncPersonId
+          ? 'Click to turn sync off'
+          : 'Click to sync timelines to this person';
+    }
     applyPresenceUi(
       card,
       PerchSchedule.schedulePresence(cardSchedule(card), parts.progress)

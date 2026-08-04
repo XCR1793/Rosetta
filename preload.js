@@ -30,6 +30,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('panel-set-expanded', { expanded, direction }),
   getPrefs: () => ipcRenderer.invoke('prefs-get'),
   setPrefs: (patch) => ipcRenderer.invoke('prefs-set', patch),
+  getUpdaterState: () => ipcRenderer.invoke('updater-get-state'),
+  checkForUpdates: () => ipcRenderer.invoke('updater-check'),
+  startUpdate: () => ipcRenderer.invoke('updater-start'),
   openPeopleConfig: () => ipcRenderer.send('open-people-config'),
   onMaximizedChange: (callback) => {
     const listener = (_event, maximized) => callback(maximized);
@@ -45,5 +48,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
     const listener = (_event, people) => callback(people);
     ipcRenderer.on('people-updated', listener);
     return () => ipcRenderer.removeListener('people-updated', listener);
+  },
+  onUpdaterState: (callback) => {
+    const listener = (_event, state) => callback(state);
+    ipcRenderer.on('updater-state', listener);
+    return () => ipcRenderer.removeListener('updater-state', listener);
   }
 });

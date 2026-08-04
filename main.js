@@ -28,6 +28,12 @@ const {
 } = require('./lib/window-state');
 const { getExchangeRate } = require('./lib/exchange');
 const { loadPrefs, savePrefs } = require('./lib/prefs');
+const {
+  initUpdater,
+  checkForUpdates,
+  startUpdate,
+  getUpdateSnapshot
+} = require('./lib/updater');
 
 if (process.platform === 'win32') {
   app.setAppUserModelId('com.perch.app');
@@ -373,6 +379,10 @@ ipcMain.handle('prefs-set', (_event, patch) => {
   return savePrefs(getPrefsRoot(), patch);
 });
 
+ipcMain.handle('updater-get-state', () => getUpdateSnapshot());
+ipcMain.handle('updater-check', () => checkForUpdates());
+ipcMain.handle('updater-start', () => startUpdate());
+
 ipcMain.on('open-people-config', () => {
   openConfigWindow();
 });
@@ -380,6 +390,12 @@ ipcMain.on('open-people-config', () => {
 app.whenReady().then(() => {
   readPeople();
   createMainWindow();
+
+  initUpdater((payload) => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('updater-state', payload);
+    }
+  });
 
   systemPreferences.on('accent-color-changed', () => {
     broadcastAccentColor();

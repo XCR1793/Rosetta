@@ -33,6 +33,8 @@ const appRoot = document.querySelector('.app');
 
 const maximizeBtn = document.getElementById('maximizeBtn');
 const maximizeIcon = document.getElementById('maximizeIcon');
+const updateBtn = document.getElementById('updateBtn');
+const minimizeBtn = document.getElementById('minimizeBtn');
 
 const GLYPH_MAXIMIZE = '\uE922';
 const GLYPH_RESTORE = '\uE923';
@@ -802,6 +804,51 @@ document.getElementById('minimizeBtn').addEventListener('click', () => {
   window.electronAPI.minimize();
 });
 
+updateBtn.addEventListener('click', async () => {
+  updateBtn.classList.add('is-busy');
+  updateBtn.disabled = true;
+  try {
+    const state = await window.electronAPI.startUpdate();
+    applyUpdaterUi(state);
+  } finally {
+    updateBtn.disabled = false;
+    updateBtn.classList.remove('is-busy');
+  }
+});
+
+function applyUpdaterUi(state = {}) {
+  const status = state.status || 'idle';
+  const show =
+    status === 'available' ||
+    status === 'downloading' ||
+    status === 'ready' ||
+    status === 'error';
+
+  updateBtn.hidden = !show;
+  updateBtn.classList.toggle('is-busy', status === 'downloading' || status === 'checking');
+
+  if (status === 'downloading') {
+    const pct = Math.max(0, Math.min(100, Math.round(state.downloadProgress?.percent || 0)));
+    updateBtn.textContent = `Downloading ${pct}%`;
+    updateBtn.title = `Downloading Perch ${state.latestVersion || ''}`.trim();
+  } else if (status === 'ready') {
+    updateBtn.textContent = 'Restart to update';
+    updateBtn.title = `Perch ${state.latestVersion} is ready — click to install and restart`;
+  } else if (status === 'error') {
+    updateBtn.textContent = 'Update failed';
+    updateBtn.title = state.errorMessage || 'Update failed — click to retry';
+  } else if (status === 'available') {
+    updateBtn.textContent = 'Update available';
+    updateBtn.title = state.packaged
+      ? `Perch ${state.latestVersion} is available — click to download and install`
+      : `Perch ${state.latestVersion} is available — packaged builds update in place; click opens releases while developing`;
+  }
+}
+
+window.electronAPI.onUpdaterState((state) => {
+  applyUpdaterUi(state);
+});
+
 maximizeBtn.addEventListener('click', () => {
   window.electronAPI.maximizeToggle();
 });
@@ -836,6 +883,13 @@ window.electronAPI.onMaximizedChange(setMaximizedUi);
     applyStoredSyncPrefs(prefs || {});
   } catch (_) {
     applyStoredSyncPrefs({});
+  }
+
+  try {
+    const updateState = await window.electronAPI.getUpdaterState();
+    applyUpdaterUi(updateState);
+  } catch (_) {
+    /* ignore */
   }
 
   const next = await window.electronAPI.getPeople();

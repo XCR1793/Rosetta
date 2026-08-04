@@ -112,6 +112,34 @@ body {
   -webkit-app-region: no-drag;
 }
 
+.update-btn {
+  height: 1.55rem;
+  padding: 0 0.7rem;
+  margin-right: 0.15rem;
+  border: none;
+  color: var(--accent-ink);
+  background: var(--accent);
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.update-btn:hover {
+  filter: brightness(1.05);
+}
+
+.update-btn[hidden] {
+  display: none !important;
+}
+
+.update-btn.is-busy {
+  opacity: 0.88;
+}
+
 .title-bar-drag {
   flex: 1;
   height: 100%;

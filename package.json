@@ -1,6 +1,6 @@
 {
   "name": "perch",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A sticky-note style time translator with timeline visualization and unit conversions",
   "main": "main.js",
   "scripts": {
@@ -57,7 +57,8 @@
       "shortcutName": "Perch",
       "runAfterFinish": false,
       "installerHeader": "Logo.ico",
-      "include": "scripts/installer.nsh"
+      "include": "scripts/installer.nsh",
+      "deleteAppDataOnUninstall": false
     },
     "files": [
       "**/*",
@@ -74,9 +75,22 @@
       "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}",
       "!Documentation (Perch)/**",
       "!ARCHITECTURE.md"
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "CawLabs",
+        "repo": "Perch",
+        "releaseType": "release"
+      }
     ]
   },
   "dependencies": {
+    "electron-updater": "^6.8.9",
     "js-yaml": "^4.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CawLabs/Perch.git"
   }
 }

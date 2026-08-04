@@ -1,8 +1,8 @@
-const { app, BrowserWindow, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
 const path = require('path');
 
 if (process.platform === 'win32') {
-  app.setAppUserModelId('com.rosetta.app');
+  app.setAppUserModelId('com.perch.app');
 }
 
 let mainWindow;
@@ -20,8 +20,8 @@ function createWindow() {
     alwaysOnTop: false,
     transparent: false,
     resizable: true,
-    minimizable: false,
-    maximizable: false,
+    minimizable: true,
+    maximizable: true,
     skipTaskbar: false,
     backgroundColor: '#1a1a2e',
     icon: icon,
@@ -37,7 +37,37 @@ function createWindow() {
   }
 
   mainWindow.loadFile('index.html');
+
+  const sendMaximizedState = () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.webContents.send('window-maximized', mainWindow.isMaximized());
+    }
+  };
+
+  mainWindow.on('maximize', sendMaximizedState);
+  mainWindow.on('unmaximize', sendMaximizedState);
 }
+
+ipcMain.on('window-minimize', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.on('window-maximize-toggle', () => {
+  if (!mainWindow) return;
+  if (mainWindow.isMaximized()) {
+    mainWindow.unmaximize();
+  } else {
+    mainWindow.maximize();
+  }
+});
+
+ipcMain.on('window-close', () => {
+  if (mainWindow) mainWindow.close();
+});
+
+ipcMain.handle('window-is-maximized', () => {
+  return mainWindow ? mainWindow.isMaximized() : false;
+});
 
 app.whenReady().then(createWindow);
 

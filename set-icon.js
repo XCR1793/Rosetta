@@ -6,8 +6,8 @@ const iconPath = path.join(__dirname, 'Logo.ico');
 
 // List of possible executable locations
 const exePaths = [
-  path.join(__dirname, 'dist', 'win-unpacked', 'Rosetta.exe'),
-  path.join(__dirname, 'dist', 'Rosetta-win32-x64', 'Rosetta.exe'),
+  path.join(__dirname, 'dist', 'win-unpacked', 'Perch.exe'),
+  path.join(__dirname, 'dist', 'Perch-win32-x64', 'Perch.exe'),
 ];
 
 console.log('Setting icon:', iconPath);

@@ -1,5 +1,5 @@
 {
-  "name": "rosetta",
+  "name": "perch",
   "version": "1.0.0",
   "description": "A sticky-note style time translator with timeline visualization and unit conversions",
   "main": "main.js",
@@ -7,7 +7,7 @@
     "start": "node launch.js",
     "dev": "electron .",
     "build": "electron-builder --win && node set-icon.js",
-    "package": "electron-packager . Rosetta --platform=win32 --arch=x64 --out=dist --overwrite --icon=Logo.ico",
+    "package": "electron-packager . Perch --platform=win32 --arch=x64 --out=dist --overwrite --icon=Logo.ico",
     "postpackage": "node set-icon.js",
     "set-icon": "node set-icon.js"
   },
@@ -20,8 +20,8 @@
     "rcedit": "^5.0.2"
   },
   "build": {
-    "appId": "com.rosetta.app",
-    "productName": "Rosetta",
+    "appId": "com.perch.app",
+    "productName": "Perch",
     "directories": {
       "output": "dist"
     },
@@ -50,7 +50,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Rosetta",
+      "shortcutName": "Perch",
       "runAfterFinish": false,
       "installerHeader": "Logo.ico",
       "include": "scripts/installer.nsh"

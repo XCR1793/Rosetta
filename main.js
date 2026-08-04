@@ -23,7 +23,7 @@ function createWindow() {
     minimizable: true,
     maximizable: true,
     skipTaskbar: false,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#fefefe',
     icon: icon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),

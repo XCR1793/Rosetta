@@ -1,0 +1,168 @@
+:root {
+  --neo-surface: #e6e7ee;
+  --neo-surface-base: #e6e7ee;
+  --neo-shadow-color: #b8bac8;
+  --neo-highlight-color: #ffffff;
+  --neo-distance: 10px;
+  --neo-blur: 16px;
+  --neo-spread: 0px;
+  --neo-crease-width: 8px;
+  --neo-shadow-x: 10px;
+  --neo-shadow-y: 10px;
+  --neo-highlight-x: -10px;
+  --neo-highlight-y: -10px;
+  --neo-intensity: 0.65;
+  --neo-hardness: 0.35;
+  --neo-height: 0.6;
+  --neo-brightness: 1;
+  --neo-ink: #3d4050;
+  --neo-light-pad-x: 0%;
+  --neo-light-pad-y: 0%;
+  --neo-bow-pad-x: 25%;
+  --neo-bow-pad-y: 25%;
+  --neo-scene-glow-size: 55%;
+  --neo-scene-glow: rgba(255, 255, 255, 0.12);
+}
+
+.neo-scene {
+  background: var(--neo-surface);
+  color: var(--neo-ink, #3d4050);
+}
+
+/*
+ * Surface profiles.
+ * Offsets / blur / colors come from --neo-* vars (provider or hard-coded scene).
+ */
+
+.neo-surface {
+  background: var(--neo-surface);
+  border: none;
+  color: inherit;
+}
+
+.neo-surface--raise {
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.neo-surface--dip {
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur)
+      var(--neo-spread) var(--neo-highlight-color);
+}
+
+/*
+ * Peak / valley = edge STROKES. Fill stays flush with the scene.
+ */
+
+.neo-surface--peak,
+.neo-surface--valley {
+  box-sizing: border-box;
+  display: flex;
+  padding: var(--neo-crease-width);
+  background: var(--neo-surface);
+}
+
+.neo-surface__face {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  background: var(--neo-surface);
+  border-radius: var(--neo-face-radius, max(0px, calc(var(--neo-radius, 0px) - var(--neo-crease-width))));
+}
+
+.neo-surface--peak {
+  overflow: hidden;
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.neo-surface--peak > .neo-surface__face {
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur)
+      var(--neo-spread) var(--neo-highlight-color);
+}
+
+.neo-surface--valley {
+  overflow: visible;
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur)
+      var(--neo-spread) var(--neo-highlight-color);
+}
+
+.neo-surface--valley > .neo-surface__face {
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.neo-surface[data-bow='up'],
+.neo-surface__face[data-bow='up'] {
+  background: radial-gradient(
+    circle at var(--neo-bow-pad-x) var(--neo-bow-pad-y),
+    color-mix(
+      in srgb,
+      var(--neo-highlight-color) calc(var(--neo-bow-intensity, 0.55) * 70%),
+      var(--neo-surface)
+    ),
+    var(--neo-surface) var(--neo-bow-falloff, 70%)
+  );
+}
+
+.neo-surface[data-bow='down'],
+.neo-surface__face[data-bow='down'] {
+  background: radial-gradient(
+    circle at var(--neo-bow-pad-x) var(--neo-bow-pad-y),
+    color-mix(
+      in srgb,
+      var(--neo-shadow-color) calc(var(--neo-bow-intensity, 0.55) * 62%),
+      var(--neo-surface)
+    ),
+    var(--neo-surface) var(--neo-bow-falloff, 70%)
+  );
+}
+
+.neo-surface--rect {
+  --neo-radius: 4px;
+  border-radius: var(--neo-radius);
+}
+
+.neo-surface--rounded {
+  --neo-radius: 18px;
+  border-radius: var(--neo-radius);
+}
+
+.neo-surface--circle {
+  --neo-radius: 50%;
+  --neo-face-radius: 50%;
+  border-radius: var(--neo-radius);
+  aspect-ratio: 1 / 1;
+}
+
+.neo-surface--pill {
+  --neo-radius: 999px;
+  --neo-face-radius: 999px;
+  border-radius: var(--neo-radius);
+}
+
+.neo-surface--bar {
+  --neo-radius: 999px;
+  --neo-face-radius: 999px;
+  border-radius: var(--neo-radius);
+  min-height: 18px;
+}

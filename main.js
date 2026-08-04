@@ -379,6 +379,21 @@ ipcMain.handle('prefs-set', (_event, patch) => {
   return savePrefs(getPrefsRoot(), patch);
 });
 
+ipcMain.handle('get-open-at-login', () => {
+  return Boolean(app.getLoginItemSettings().openAtLogin);
+});
+
+ipcMain.handle('set-open-at-login', (_event, enabled) => {
+  const openAtLogin = Boolean(enabled);
+  app.setLoginItemSettings({
+    openAtLogin,
+    // Keep visible on startup — Perch is a desk widget, not a tray-only agent.
+    openAsHidden: false
+  });
+  savePrefs(getPrefsRoot(), { openAtLogin });
+  return Boolean(app.getLoginItemSettings().openAtLogin);
+});
+
 ipcMain.handle('updater-get-state', () => getUpdateSnapshot());
 ipcMain.handle('updater-check', () => checkForUpdates());
 ipcMain.handle('updater-start', () => startUpdate());
@@ -388,6 +403,17 @@ ipcMain.on('open-people-config', () => {
 });
 
 app.whenReady().then(() => {
+  const prefs = loadPrefs(getPrefsRoot());
+  const openAtLogin =
+    typeof prefs.openAtLogin === 'boolean' ? prefs.openAtLogin : true;
+  app.setLoginItemSettings({
+    openAtLogin,
+    openAsHidden: false
+  });
+  if (typeof prefs.openAtLogin !== 'boolean') {
+    savePrefs(getPrefsRoot(), { openAtLogin: true });
+  }
+
   readPeople();
   createMainWindow();
 

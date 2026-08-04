@@ -16,6 +16,8 @@ const convertRateLine = document.getElementById('convertRateLine');
 const convertRateUpdated = document.getElementById('convertRateUpdated');
 const themeSwitch = document.getElementById('themeSwitch');
 const themeHint = document.getElementById('themeHint');
+const openAtLoginSwitch = document.getElementById('openAtLoginSwitch');
+const openAtLoginHint = document.getElementById('openAtLoginHint');
 const accentAutoBtn = document.getElementById('accentAutoBtn');
 const accentColorInput = document.getElementById('accentColorInput');
 const accentSwatchFill = document.getElementById('accentSwatchFill');
@@ -441,6 +443,18 @@ function setTheme(nextTheme) {
   window.electronAPI.setBackgroundColor(isDark ? '#111212' : '#fefefe');
 }
 
+function applyOpenAtLoginUi(enabled) {
+  const on = Boolean(enabled);
+  openAtLoginSwitch.setAttribute('aria-checked', String(on));
+  openAtLoginHint.textContent = on ? 'Starts with Windows' : 'Off';
+}
+
+async function setOpenAtLogin(enabled) {
+  const on = await window.electronAPI.setOpenAtLogin(Boolean(enabled));
+  applyOpenAtLoginUi(on);
+  return on;
+}
+
 function applyAccent(color) {
   activeAccent = normalizeHex(color);
   appRoot.style.setProperty('--accent', activeAccent);
@@ -763,6 +777,11 @@ themeSwitch.addEventListener('click', () => {
   setTheme(theme === 'dark' ? 'light' : 'dark');
 });
 
+openAtLoginSwitch.addEventListener('click', () => {
+  const next = openAtLoginSwitch.getAttribute('aria-checked') !== 'true';
+  setOpenAtLogin(next);
+});
+
 accentAutoBtn.addEventListener('click', () => {
   setAccentMode('auto');
 });
@@ -883,6 +902,13 @@ window.electronAPI.onMaximizedChange(setMaximizedUi);
     applyStoredSyncPrefs(prefs || {});
   } catch (_) {
     applyStoredSyncPrefs({});
+  }
+
+  try {
+    const openAtLogin = await window.electronAPI.getOpenAtLogin();
+    applyOpenAtLoginUi(openAtLogin);
+  } catch (_) {
+    applyOpenAtLoginUi(false);
   }
 
   try {

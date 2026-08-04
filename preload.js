@@ -30,6 +30,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('panel-set-expanded', { expanded, direction }),
   getPrefs: () => ipcRenderer.invoke('prefs-get'),
   setPrefs: (patch) => ipcRenderer.invoke('prefs-set', patch),
+  getOpenAtLogin: () => ipcRenderer.invoke('get-open-at-login'),
+  setOpenAtLogin: (enabled) => ipcRenderer.invoke('set-open-at-login', enabled),
   getUpdaterState: () => ipcRenderer.invoke('updater-get-state'),
   checkForUpdates: () => ipcRenderer.invoke('updater-check'),
   startUpdate: () => ipcRenderer.invoke('updater-start'),

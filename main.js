@@ -150,8 +150,8 @@ function openConfigWindow() {
   const parentBounds = mainWindow ? mainWindow.getBounds() : null;
 
   configWindow = new BrowserWindow({
-    width: 900,
-    height: 620,
+    width: 920,
+    height: 720,
     minWidth: 760,
     minHeight: 480,
     x: parentBounds ? parentBounds.x + 40 : undefined,

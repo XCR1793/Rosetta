@@ -8,6 +8,10 @@ people:
     gmtOffset: null
     currencyMode: auto
     currency: AUD
+    wakeTime: '07:00'
+    sleepTime: '23:00'
+    workStart: '09:00'
+    workEnd: '17:00'
   - id: missouri
     name: Jordan
     country: United States
@@ -17,6 +21,10 @@ people:
     gmtOffset: null
     currencyMode: auto
     currency: USD
+    wakeTime: '06:30'
+    sleepTime: '22:30'
+    workStart: '08:30'
+    workEnd: '17:00'
   - id: busan
     name: Min
     country: South Korea
@@ -26,3 +34,7 @@ people:
     gmtOffset: null
     currencyMode: auto
     currency: KRW
+    wakeTime: '08:00'
+    sleepTime: '00:30'
+    workStart: '10:00'
+    workEnd: '19:00'

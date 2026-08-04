@@ -95,6 +95,42 @@
             </label>
           </div>
 
+          <div class="form-row">
+            <span class="field__label">Daily schedule</span>
+            <div class="schedule-fields">
+              <label class="field">
+                <span class="field__label">Wake</span>
+                <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldWake" type="time" step="300">
+              </label>
+              <label class="field">
+                <span class="field__label">Sleep</span>
+                <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldSleep" type="time" step="300">
+              </label>
+              <label class="field">
+                <span class="field__label">Work start</span>
+                <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldWorkStart" type="time" step="300">
+              </label>
+              <label class="field">
+                <span class="field__label">Work end</span>
+                <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldWorkEnd" type="time" step="300">
+              </label>
+            </div>
+            <div class="schedule-preview">
+              <div class="timeline neo-surface neo-surface--dip neo-surface--pill" id="schedulePreviewTimeline">
+                <div class="timeline__track"></div>
+                <div class="timeline__schedule" id="schedulePreviewBands"></div>
+                <div class="timeline__hours" id="schedulePreviewHours"></div>
+                <div class="timeline__marker" id="schedulePreviewMarker"></div>
+              </div>
+              <div class="timeline__labels" id="schedulePreviewLabels"></div>
+              <div class="schedule-legend">
+                <span class="schedule-legend__item schedule-legend__item--sleep">Sleep</span>
+                <span class="schedule-legend__item schedule-legend__item--work">Work</span>
+                <span class="schedule-legend__item schedule-legend__item--now">Now</span>
+              </div>
+            </div>
+          </div>
+
           <div class="form-row form-row--split">
             <div class="field">
               <span class="field__label">Currency</span>
@@ -117,6 +153,7 @@
       <button class="primary-btn" id="saveBtn" type="button">Save</button>
     </footer>
   </div>
+  <script src="lib/schedule.js"></script>
   <script src="config.js"></script>
 </body>
 </html>

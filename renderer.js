@@ -159,10 +159,54 @@ function getZonedParts(timeZone) {
 }
 
 function formatHourLabel(hour) {
-  if (hour === 0) return '12a';
-  if (hour === 12) return '12p';
-  if (hour < 12) return `${hour}a`;
-  return `${hour - 12}p`;
+  return PerchSchedule.formatHourLabel(hour);
+}
+
+function personSchedule(person) {
+  return PerchSchedule.normalizeSchedule(person || {});
+}
+
+function renderScheduleBands(container, schedule) {
+  if (!container) return;
+  container.innerHTML = '';
+  const bands = PerchSchedule.scheduleBands(schedule);
+
+  for (const range of bands.sleep) {
+    const band = document.createElement('div');
+    band.className = 'timeline__band timeline__band--sleep';
+    band.style.left = `${range.start * 100}%`;
+    band.style.width = `${(range.end - range.start) * 100}%`;
+    container.appendChild(band);
+  }
+
+  for (const range of bands.work) {
+    const band = document.createElement('div');
+    band.className = 'timeline__band timeline__band--work';
+    band.style.left = `${range.start * 100}%`;
+    band.style.width = `${(range.end - range.start) * 100}%`;
+    container.appendChild(band);
+  }
+}
+
+function fillTimelineScaffold(hoursEl, labelsEl) {
+  hoursEl.innerHTML = '';
+  labelsEl.innerHTML = '';
+
+  for (let hour = 0; hour < 24; hour += 1) {
+    const tick = document.createElement('span');
+    tick.className = `timeline__hour${hour % 3 === 0 ? ' timeline__hour--major' : ''}`;
+    tick.style.left = `${(hour / 24) * 100}%`;
+    tick.setAttribute('aria-hidden', 'true');
+    hoursEl.appendChild(tick);
+  }
+
+  for (let hour = 0; hour < 24; hour += 3) {
+    const label = document.createElement('span');
+    label.className = 'timeline__label' + (hour === 0 ? ' timeline__label--start' : '');
+    label.style.left = `${(hour / 24) * 100}%`;
+    label.textContent = formatHourLabel(hour);
+    labelsEl.appendChild(label);
+  }
 }
 
 function ensureTimelineCards() {
@@ -185,6 +229,7 @@ function ensureTimelineCards() {
         <div class="timeline-block">
           <div class="timeline neo-surface neo-surface--dip neo-surface--pill">
             <div class="timeline__track"></div>
+            <div class="timeline__schedule"></div>
             <div class="timeline__hours"></div>
             <div class="timeline__marker"></div>
           </div>
@@ -196,31 +241,16 @@ function ensureTimelineCards() {
         </div>
       `;
 
-      const hoursEl = card.querySelector('.timeline__hours');
-      const labelsEl = card.querySelector('.timeline__labels');
-
-      // Absolute positions share one scale with the marker: midnight=0%, next midnight=100%.
-      for (let hour = 0; hour < 24; hour += 1) {
-        const tick = document.createElement('span');
-        tick.className = `timeline__hour${hour % 3 === 0 ? ' timeline__hour--major' : ''}`;
-        tick.style.left = `${(hour / 24) * 100}%`;
-        tick.setAttribute('aria-hidden', 'true');
-        hoursEl.appendChild(tick);
-      }
-
-      // Labels every 3 hours keeps a tiny widget readable.
-      for (let hour = 0; hour < 24; hour += 3) {
-        const label = document.createElement('span');
-        label.className = 'timeline__label' + (hour === 0 ? ' timeline__label--start' : '');
-        label.style.left = `${(hour / 24) * 100}%`;
-        label.textContent = formatHourLabel(hour);
-        labelsEl.appendChild(label);
-      }
+      fillTimelineScaffold(
+        card.querySelector('.timeline__hours'),
+        card.querySelector('.timeline__labels')
+      );
     }
 
     card.dataset.id = person.id;
     card.dataset.timezone = person.resolvedTimezone || person.timezone || 'UTC';
     card.querySelector('.person-card__name').textContent = person.name;
+    renderScheduleBands(card.querySelector('.timeline__schedule'), personSchedule(person));
     peopleTimelines.appendChild(card);
   });
 }

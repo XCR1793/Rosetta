@@ -13,6 +13,14 @@ const fieldGmt = document.getElementById('fieldGmt');
 const fieldCurrency = document.getElementById('fieldCurrency');
 const currencyAutoBtn = document.getElementById('currencyAutoBtn');
 const currencyHint = document.getElementById('currencyHint');
+const fieldWake = document.getElementById('fieldWake');
+const fieldSleep = document.getElementById('fieldSleep');
+const fieldWorkStart = document.getElementById('fieldWorkStart');
+const fieldWorkEnd = document.getElementById('fieldWorkEnd');
+const schedulePreviewBands = document.getElementById('schedulePreviewBands');
+const schedulePreviewHours = document.getElementById('schedulePreviewHours');
+const schedulePreviewLabels = document.getElementById('schedulePreviewLabels');
+const schedulePreviewMarker = document.getElementById('schedulePreviewMarker');
 
 const timezoneFromLocationRow = document.getElementById('timezoneFromLocationRow');
 const timezoneManualRow = document.getElementById('timezoneManualRow');
@@ -33,6 +41,8 @@ let people = [];
 let selectedId = null;
 let options = { countries: [], allTimezones: [], gmtOffsets: [] };
 let dirty = false;
+let previewTickTimer = null;
+let previewScaffoldReady = false;
 
 function normalizeHex(value) {
   if (typeof value !== 'string') return FALLBACK_ACCENT;
@@ -143,6 +153,123 @@ async function syncCurrencyFromCountry(person) {
     : 'No currency mapped for this country';
 }
 
+function ensurePreviewScaffold() {
+  if (previewScaffoldReady) return;
+  schedulePreviewHours.innerHTML = '';
+  schedulePreviewLabels.innerHTML = '';
+
+  for (let hour = 0; hour < 24; hour += 1) {
+    const tick = document.createElement('span');
+    tick.className = `timeline__hour${hour % 3 === 0 ? ' timeline__hour--major' : ''}`;
+    tick.style.left = `${(hour / 24) * 100}%`;
+    tick.setAttribute('aria-hidden', 'true');
+    schedulePreviewHours.appendChild(tick);
+  }
+
+  for (let hour = 0; hour < 24; hour += 3) {
+    const label = document.createElement('span');
+    label.className = 'timeline__label' + (hour === 0 ? ' timeline__label--start' : '');
+    label.style.left = `${(hour / 24) * 100}%`;
+    label.textContent = PerchSchedule.formatHourLabel(hour);
+    schedulePreviewLabels.appendChild(label);
+  }
+
+  previewScaffoldReady = true;
+}
+
+function readScheduleFromFields() {
+  return PerchSchedule.normalizeSchedule({
+    wakeTime: fieldWake.value,
+    sleepTime: fieldSleep.value,
+    workStart: fieldWorkStart.value,
+    workEnd: fieldWorkEnd.value
+  });
+}
+
+function renderScheduleBands(container, schedule) {
+  container.innerHTML = '';
+  const bands = PerchSchedule.scheduleBands(schedule);
+
+  for (const range of bands.sleep) {
+    const band = document.createElement('div');
+    band.className = 'timeline__band timeline__band--sleep';
+    band.style.left = `${range.start * 100}%`;
+    band.style.width = `${(range.end - range.start) * 100}%`;
+    container.appendChild(band);
+  }
+
+  for (const range of bands.work) {
+    const band = document.createElement('div');
+    band.className = 'timeline__band timeline__band--work';
+    band.style.left = `${range.start * 100}%`;
+    band.style.width = `${(range.end - range.start) * 100}%`;
+    container.appendChild(band);
+  }
+}
+
+function getPreviewProgress(person) {
+  const zone = person?.resolvedTimezone || person?.timezone;
+  if (!zone) {
+    const now = new Date();
+    return (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400;
+  }
+
+  try {
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: zone,
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hourCycle: 'h23'
+    });
+    const parts = Object.fromEntries(
+      formatter.formatToParts(new Date()).map((part) => [part.type, part.value])
+    );
+    return (
+      (Number(parts.hour || 0) * 3600 +
+        Number(parts.minute || 0) * 60 +
+        Number(parts.second || 0)) /
+      86400
+    );
+  } catch (_) {
+    const now = new Date();
+    return (now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()) / 86400;
+  }
+}
+
+function updateSchedulePreview(person = selectedPerson()) {
+  ensurePreviewScaffold();
+  const schedule = person
+    ? PerchSchedule.normalizeSchedule(person)
+    : readScheduleFromFields();
+  renderScheduleBands(schedulePreviewBands, schedule);
+  schedulePreviewMarker.style.left = `${getPreviewProgress(person) * 100}%`;
+}
+
+function applyScheduleToFields(person) {
+  const schedule = PerchSchedule.normalizeSchedule(person || {});
+  fieldWake.value = schedule.wakeTime;
+  fieldSleep.value = schedule.sleepTime;
+  fieldWorkStart.value = schedule.workStart;
+  fieldWorkEnd.value = schedule.workEnd;
+}
+
+function writeScheduleToPerson(person) {
+  const schedule = readScheduleFromFields();
+  person.wakeTime = schedule.wakeTime;
+  person.sleepTime = schedule.sleepTime;
+  person.workStart = schedule.workStart;
+  person.workEnd = schedule.workEnd;
+}
+
+function onScheduleFieldChange() {
+  const person = selectedPerson();
+  if (!person) return;
+  writeScheduleToPerson(person);
+  setDirty(true);
+  updateSchedulePreview(person);
+}
+
 function renderPeopleList() {
   peopleListEl.innerHTML = '';
   people.forEach((person) => {
@@ -208,6 +335,9 @@ async function populateEditor(person) {
     person.currencyMode === 'manual'
       ? 'Manual currency'
       : `Auto-detected: ${person.currency || '—'}`;
+
+  applyScheduleToFields(person);
+  updateSchedulePreview(person);
 }
 
 function readEditorIntoPerson(person) {
@@ -231,6 +361,7 @@ function readEditorIntoPerson(person) {
   person.currencyMode =
     currencyAutoBtn.getAttribute('aria-pressed') === 'true' ? 'auto' : 'manual';
   person.currency = fieldCurrency.value.trim().toUpperCase() || null;
+  writeScheduleToPerson(person);
 }
 
 async function selectPerson(id) {
@@ -265,7 +396,8 @@ async function addPerson() {
     timezone: zones[0] || 'UTC',
     gmtOffset: null,
     currencyMode: 'auto',
-    currency: currency || null
+    currency: currency || null,
+    ...PerchSchedule.DEFAULT_SCHEDULE
   };
 
   people.push(person);
@@ -358,6 +490,7 @@ fieldLocationTimezone.addEventListener('change', () => {
   person.timezone = fieldLocationTimezone.value;
   setDirty(true);
   renderPeopleList();
+  updateSchedulePreview(person);
 });
 
 fieldManualTimezone.addEventListener('change', () => {
@@ -366,6 +499,7 @@ fieldManualTimezone.addEventListener('change', () => {
   person.timezone = fieldManualTimezone.value;
   setDirty(true);
   renderPeopleList();
+  updateSchedulePreview(person);
 });
 
 fieldGmt.addEventListener('change', () => {
@@ -374,6 +508,7 @@ fieldGmt.addEventListener('change', () => {
   person.gmtOffset = Number(fieldGmt.value);
   setDirty(true);
   renderPeopleList();
+  updateSchedulePreview(person);
 });
 
 document.querySelectorAll('[data-tz-mode]').forEach((btn) => {
@@ -396,6 +531,7 @@ document.querySelectorAll('[data-tz-mode]').forEach((btn) => {
     }
     setDirty(true);
     renderPeopleList();
+    updateSchedulePreview(person);
   });
 });
 
@@ -418,6 +554,11 @@ fieldCurrency.addEventListener('input', () => {
   person.currency = fieldCurrency.value.trim().toUpperCase();
   currencyHint.textContent = 'Manual currency';
   setDirty(true);
+});
+
+[fieldWake, fieldSleep, fieldWorkStart, fieldWorkEnd].forEach((input) => {
+  input.addEventListener('input', onScheduleFieldChange);
+  input.addEventListener('change', onScheduleFieldChange);
 });
 
 window.electronAPI.onSystemAccentColorChange((color) => {
@@ -452,4 +593,9 @@ window.electronAPI.onMaximizedChange(setMaximizedUi);
   renderPeopleList();
   await populateEditor(selectedPerson());
   setDirty(false);
+
+  if (previewTickTimer) clearInterval(previewTickTimer);
+  previewTickTimer = setInterval(() => {
+    if (!editorForm.hidden) updateSchedulePreview(selectedPerson());
+  }, 1000);
 })();

@@ -1,0 +1,28 @@
+people:
+  - id: sydney
+    name: Alex
+    country: Australia
+    state: New South Wales
+    timezoneMode: location
+    timezone: Australia/Sydney
+    gmtOffset: null
+    currencyMode: auto
+    currency: AUD
+  - id: missouri
+    name: Jordan
+    country: United States
+    state: Missouri
+    timezoneMode: location
+    timezone: America/Chicago
+    gmtOffset: null
+    currencyMode: auto
+    currency: USD
+  - id: busan
+    name: Min
+    country: South Korea
+    state: Busan
+    timezoneMode: location
+    timezone: Asia/Seoul
+    gmtOffset: null
+    currencyMode: auto
+    currency: KRW

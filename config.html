@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com">
+  <title>Perch — People</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="neumorph.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="config.css">
+</head>
+<body>
+  <div class="app neo-scene config-app">
+    <header class="title-bar">
+      <div class="title-bar__shell neo-surface neo-surface--dip neo-surface--rounded" data-neumorph="dip">
+        <span class="title-label">People</span>
+        <div class="title-bar__inner">
+          <div class="title-bar-left"></div>
+          <div class="title-bar-drag"></div>
+          <div class="title-bar-right">
+            <button class="title-btn caption-btn neo-surface neo-surface--rounded" id="minimizeBtn" title="Minimize" type="button" aria-label="Minimize">
+              <span class="caption-icon" aria-hidden="true">&#xE921;</span>
+            </button>
+            <button class="title-btn caption-btn neo-surface neo-surface--rounded" id="maximizeBtn" title="Maximize" type="button" aria-label="Maximize">
+              <span class="caption-icon" id="maximizeIcon" aria-hidden="true">&#xE922;</span>
+            </button>
+            <button class="title-btn caption-btn close-btn neo-surface neo-surface--rounded" id="closeBtn" title="Close" type="button" aria-label="Close">
+              <span class="caption-icon" aria-hidden="true">&#xE8BB;</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="config-content">
+      <aside class="people-list neo-surface neo-surface--dip neo-surface--rounded">
+        <div class="people-list__header">
+          <h2>Profiles</h2>
+          <button class="chip-btn" id="addPersonBtn" type="button">+ Add</button>
+        </div>
+        <div class="people-list__items" id="peopleList"></div>
+      </aside>
+
+      <section class="person-editor neo-surface neo-surface--raise neo-surface--rounded" id="personEditor">
+        <div class="empty-editor" id="emptyEditor">Select or add a person</div>
+        <form class="editor-form" id="editorForm" hidden>
+          <div class="form-row">
+            <label class="field">
+              <span class="field__label">Name</span>
+              <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldName" type="text" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="form-row form-row--split">
+            <label class="field">
+              <span class="field__label">Country</span>
+              <select class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldCountry"></select>
+            </label>
+            <label class="field">
+              <span class="field__label">State / Region</span>
+              <select class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldState"></select>
+            </label>
+          </div>
+
+          <div class="form-row">
+            <span class="field__label">Timezone source</span>
+            <div class="segmented" role="group" aria-label="Timezone source">
+              <button class="segmented__btn" type="button" data-tz-mode="location">Location</button>
+              <button class="segmented__btn" type="button" data-tz-mode="timezone">Timezone</button>
+              <button class="segmented__btn" type="button" data-tz-mode="gmt">GMT</button>
+            </div>
+          </div>
+
+          <div class="form-row" id="timezoneFromLocationRow">
+            <label class="field">
+              <span class="field__label">Suggested timezones</span>
+              <select class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldLocationTimezone"></select>
+            </label>
+          </div>
+
+          <div class="form-row" id="timezoneManualRow" hidden>
+            <label class="field">
+              <span class="field__label">IANA timezone</span>
+              <select class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldManualTimezone"></select>
+            </label>
+          </div>
+
+          <div class="form-row" id="gmtRow" hidden>
+            <label class="field">
+              <span class="field__label">GMT offset</span>
+              <select class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldGmt"></select>
+            </label>
+          </div>
+
+          <div class="form-row form-row--split">
+            <div class="field">
+              <span class="field__label">Currency</span>
+              <div class="currency-row">
+                <button class="chip-btn" id="currencyAutoBtn" type="button" aria-pressed="true">Auto</button>
+                <input class="field__input neo-surface neo-surface--dip neo-surface--rounded" id="fieldCurrency" type="text" maxlength="3" spellcheck="false">
+              </div>
+              <span class="field__hint" id="currencyHint">Detected from country</span>
+            </div>
+            <div class="field field--actions">
+              <button class="danger-btn" id="deletePersonBtn" type="button">Remove person</button>
+            </div>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer class="config-footer">
+      <span class="save-status" id="saveStatus"></span>
+      <button class="primary-btn" id="saveBtn" type="button">Save</button>
+    </footer>
+  </div>
+  <script src="config.js"></script>
+</body>
+</html>

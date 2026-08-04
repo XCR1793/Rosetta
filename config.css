@@ -1,0 +1,320 @@
+.config-app {
+  min-height: 100%;
+}
+
+.config-content {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 0.75rem;
+  flex: 1;
+  min-height: 0;
+  padding: 0.35rem 0.7rem 0.55rem;
+}
+
+.people-list,
+.person-editor {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.people-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+}
+
+.people-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.people-list__header h2 {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.people-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  overflow: auto;
+  min-height: 0;
+}
+
+.person-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  width: 100%;
+  padding: 0.65rem 0.7rem;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  opacity: 0.78;
+  transition:
+    opacity 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.person-item:hover {
+  opacity: 1;
+  background: var(--neo-surface);
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.person-item.active {
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 16%, var(--neo-surface));
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) calc(var(--neo-blur) * 0.5) var(--neo-spread)
+      var(--neo-shadow-color),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) calc(var(--neo-blur) * 0.5)
+      var(--neo-spread) var(--neo-highlight-color);
+}
+
+.person-item__name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.person-item__meta {
+  font-size: 0.72rem;
+  opacity: 0.55;
+}
+
+.person-editor {
+  padding: 1rem 1.1rem;
+  overflow: auto;
+}
+
+.empty-editor {
+  display: grid;
+  place-items: center;
+  min-height: 8rem;
+  opacity: 0.5;
+  font-size: 0.92rem;
+}
+
+.empty-editor[hidden],
+.editor-form[hidden],
+.form-row[hidden] {
+  display: none !important;
+}
+
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+/* Neumorphic scrollbars */
+.person-editor,
+.people-list__items {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--neo-ink) 28%, var(--neo-surface))
+    color-mix(in srgb, var(--neo-ink) 6%, var(--neo-surface));
+}
+
+.person-editor::-webkit-scrollbar,
+.people-list__items::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.person-editor::-webkit-scrollbar-track,
+.people-list__items::-webkit-scrollbar-track {
+  margin: 8px 4px;
+  background: var(--neo-surface);
+  border-radius: 999px;
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) calc(var(--neo-blur) * 0.45) var(--neo-spread)
+      var(--neo-shadow-color),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) calc(var(--neo-blur) * 0.45)
+      var(--neo-spread) var(--neo-highlight-color);
+}
+
+.person-editor::-webkit-scrollbar-thumb,
+.people-list__items::-webkit-scrollbar-thumb {
+  background: var(--neo-surface);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) calc(var(--neo-blur) * 0.4) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) calc(var(--neo-blur) * 0.4) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.person-editor::-webkit-scrollbar-thumb:hover,
+.people-list__items::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--neo-surface));
+  background-clip: padding-box;
+}
+
+.person-editor::-webkit-scrollbar-corner,
+.people-list__items::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.form-row--split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.field--actions {
+  justify-content: flex-end;
+}
+
+.field__label {
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.field__hint {
+  font-size: 0.72rem;
+  opacity: 0.5;
+}
+
+.field__input {
+  width: 100%;
+  height: 2.35rem;
+  padding: 0 0.8rem;
+  border: none;
+  outline: none;
+  color: var(--neo-ink);
+  font: inherit;
+  font-size: 0.9rem;
+  background: var(--neo-surface);
+}
+
+.field__input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.segmented {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--neo-ink) 4%, transparent);
+}
+
+.segmented__btn {
+  height: 1.8rem;
+  padding: 0 0.8rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--neo-ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.segmented__btn.active {
+  opacity: 1;
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.currency-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.currency-row .field__input {
+  text-transform: uppercase;
+  width: 5.5rem;
+}
+
+.chip-btn,
+.primary-btn,
+.danger-btn {
+  height: 1.85rem;
+  padding: 0 0.85rem;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.chip-btn {
+  background: transparent;
+  color: var(--neo-ink);
+  opacity: 0.78;
+}
+
+.chip-btn:hover,
+.chip-btn[aria-pressed="true"] {
+  opacity: 1;
+}
+
+.chip-btn[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.primary-btn {
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
+.danger-btn {
+  align-self: flex-end;
+  color: #fff;
+  background: hsl(355, 72%, 48%);
+}
+
+.config-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.35rem 0.85rem 0.75rem;
+}
+
+.save-status {
+  font-size: 0.75rem;
+  opacity: 0.55;
+}

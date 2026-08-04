@@ -412,7 +412,7 @@ body {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.05rem;
-  min-width: 4.6rem;
+  min-width: 5.4rem;
   padding-top: 0.35rem;
 }
 
@@ -632,6 +632,36 @@ body {
   display: flex;
   align-items: center;
   -webkit-app-region: no-drag;
+}
+
+.segmented {
+  display: inline-flex;
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--neo-ink) 4%, transparent);
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.segmented__btn {
+  height: 1.7rem;
+  padding: 0 0.75rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--neo-ink);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 650;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.segmented__btn.active {
+  opacity: 1;
+  color: var(--accent-ink);
+  background: var(--accent);
 }
 
 .scale-select {

@@ -98,6 +98,17 @@
 
           <div class="settings-row">
             <div class="settings-row__text">
+              <span class="settings-row__label">Time format</span>
+              <span class="settings-row__hint" id="hourFormatHint">24-hour</span>
+            </div>
+            <div class="segmented" role="group" aria-label="Time format">
+              <button class="segmented__btn" id="hourFormat12Btn" type="button" data-hour-format="12">12h</button>
+              <button class="segmented__btn" id="hourFormat24Btn" type="button" data-hour-format="24">24h</button>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row__text">
               <span class="settings-row__label">Scale</span>
               <span class="settings-row__hint" id="scaleHint">100%</span>
             </div>

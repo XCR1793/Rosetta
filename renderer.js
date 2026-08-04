@@ -11,6 +11,9 @@ const accentSwatchFill = document.getElementById('accentSwatchFill');
 const accentHint = document.getElementById('accentHint');
 const scaleSelect = document.getElementById('scaleSelect');
 const scaleHint = document.getElementById('scaleHint');
+const hourFormatHint = document.getElementById('hourFormatHint');
+const hourFormat12Btn = document.getElementById('hourFormat12Btn');
+const hourFormat24Btn = document.getElementById('hourFormat24Btn');
 const appRoot = document.querySelector('.app');
 
 const maximizeBtn = document.getElementById('maximizeBtn');
@@ -22,6 +25,7 @@ const THEME_KEY = 'perch.theme';
 const ACCENT_MODE_KEY = 'perch.accentMode';
 const ACCENT_COLOR_KEY = 'perch.accentColor';
 const SCALE_KEY = 'perch.scale';
+const HOUR_FORMAT_KEY = 'perch.hourFormat';
 const FALLBACK_ACCENT = '#0078d4';
 const SCALE_OPTIONS = [75, 90, 100, 110, 125, 150];
 
@@ -31,6 +35,7 @@ let accentMode = localStorage.getItem(ACCENT_MODE_KEY) === 'manual' ? 'manual' :
 let manualAccent = normalizeHex(localStorage.getItem(ACCENT_COLOR_KEY) || FALLBACK_ACCENT);
 let activeAccent = FALLBACK_ACCENT;
 let scalePercent = readStoredScale();
+let hourFormat = localStorage.getItem(HOUR_FORMAT_KEY) === '12' ? '12' : '24';
 let people = [];
 let tickTimer = null;
 
@@ -58,6 +63,29 @@ function setScale(percent) {
   window.electronAPI.setZoomFactor(scalePercent / 100);
   scaleSelect.value = String(scalePercent);
   scaleHint.textContent = scalePercent === 100 ? 'Default' : `${scalePercent}%`;
+}
+
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+function formatClockTime(hours, minutes, seconds) {
+  if (hourFormat === '12') {
+    const period = hours >= 12 ? 'pm' : 'am';
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${pad2(minutes)}:${pad2(seconds)} ${period}`;
+  }
+  return `${pad2(hours)}:${pad2(minutes)}:${pad2(seconds)}`;
+}
+
+function setHourFormat(format) {
+  hourFormat = format === '12' ? '12' : '24';
+  localStorage.setItem(HOUR_FORMAT_KEY, hourFormat);
+  hourFormat12Btn.classList.toggle('active', hourFormat === '12');
+  hourFormat24Btn.classList.toggle('active', hourFormat === '24');
+  hourFormatHint.textContent = hourFormat === '12' ? '12-hour' : '24-hour';
+  refreshTimelineLabels();
+  updateTimelineCards();
 }
 
 function accentInkFor(hex) {
@@ -151,7 +179,7 @@ function getZonedParts(timeZone) {
   const dayFraction = (hours * 3600 + minutes * 60 + seconds) / 86400;
 
   return {
-    time: `${parts.hour}:${parts.minute}:${parts.second}`,
+    time: formatClockTime(hours, minutes, seconds),
     date: `${parts.day} ${parts.month}`,
     // Looping marker: 0..1 wraps naturally each midnight
     progress: ((dayFraction % 1) + 1) % 1
@@ -159,7 +187,16 @@ function getZonedParts(timeZone) {
 }
 
 function formatHourLabel(hour) {
+  if (hourFormat === '24') return pad2(hour);
   return PerchSchedule.formatHourLabel(hour);
+}
+
+function refreshTimelineLabels() {
+  peopleTimelines.querySelectorAll('.timeline__label').forEach((label, index) => {
+    // Labels are created every 3 hours: 0,3,6,...,21
+    const hour = (index % 8) * 3;
+    label.textContent = formatHourLabel(hour);
+  });
 }
 
 function personSchedule(person) {
@@ -330,6 +367,9 @@ scaleSelect.addEventListener('change', () => {
   setScale(scaleSelect.value);
 });
 
+hourFormat12Btn.addEventListener('click', () => setHourFormat('12'));
+hourFormat24Btn.addEventListener('click', () => setHourFormat('24'));
+
 document.getElementById('minimizeBtn').addEventListener('click', () => {
   window.electronAPI.minimize();
 });
@@ -355,6 +395,7 @@ window.electronAPI.onPeopleUpdated((next) => {
 setTheme(theme);
 setAccentMode(accentMode, manualAccent);
 setScale(scalePercent);
+setHourFormat(hourFormat);
 setView('home');
 window.electronAPI.isMaximized().then(setMaximizedUi);
 window.electronAPI.onMaximizedChange(setMaximizedUi);

@@ -48,7 +48,45 @@
 
     <main class="content">
       <section class="view view-home" id="homeView"></section>
-      <section class="view view-settings" id="settingsView" hidden></section>
+      <section class="view view-settings" id="settingsView" hidden>
+        <div class="settings-panel">
+          <div class="settings-row">
+            <div class="settings-row__text">
+              <span class="settings-row__label">Appearance</span>
+              <span class="settings-row__hint" id="themeHint">Light mode</span>
+            </div>
+            <button
+              class="theme-switch"
+              id="themeSwitch"
+              type="button"
+              role="switch"
+              aria-checked="false"
+              aria-label="Dark mode"
+              title="Toggle light / dark mode"
+            >
+              <span class="theme-switch__track neo-surface neo-surface--dip neo-surface--pill">
+                <span class="theme-switch__thumb neo-surface neo-surface--raise neo-surface--circle" aria-hidden="true"></span>
+              </span>
+            </button>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row__text">
+              <span class="settings-row__label">Accent colour</span>
+              <span class="settings-row__hint" id="accentHint">Auto</span>
+            </div>
+            <div class="accent-controls">
+              <button class="accent-auto-btn" id="accentAutoBtn" type="button" aria-pressed="true">
+                Auto
+              </button>
+              <label class="accent-swatch neo-surface neo-surface--dip neo-surface--circle" title="Pick accent colour">
+                <input class="accent-swatch__input" id="accentColorInput" type="color" value="#0078d4" aria-label="Accent colour">
+                <span class="accent-swatch__fill" id="accentSwatchFill" aria-hidden="true"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
   <script src="renderer.js"></script>

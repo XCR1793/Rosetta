@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, nativeImage, systemPreferences } = require('electron');
 const path = require('path');
 
 if (process.platform === 'win32') {
@@ -6,6 +6,32 @@ if (process.platform === 'win32') {
 }
 
 let mainWindow;
+
+function normalizeAccentColor(raw) {
+  if (typeof raw !== 'string') return '#0078d4';
+
+  const hex = raw.replace('#', '').trim();
+  if (hex.length >= 6) {
+    return `#${hex.slice(0, 6).toLowerCase()}`;
+  }
+
+  return '#0078d4';
+}
+
+function getSystemAccentColor() {
+  try {
+    return normalizeAccentColor(systemPreferences.getAccentColor());
+  } catch (e) {
+    console.error('Error reading system accent color:', e);
+    return '#0078d4';
+  }
+}
+
+function broadcastAccentColor(color) {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('system-accent-color', normalizeAccentColor(color));
+  }
+}
 
 function createWindow() {
   const iconPath = app.isPackaged
@@ -69,7 +95,23 @@ ipcMain.handle('window-is-maximized', () => {
   return mainWindow ? mainWindow.isMaximized() : false;
 });
 
-app.whenReady().then(createWindow);
+ipcMain.on('window-background-color', (_event, color) => {
+  if (mainWindow && typeof color === 'string') {
+    mainWindow.setBackgroundColor(color);
+  }
+});
+
+ipcMain.handle('get-system-accent-color', () => {
+  return getSystemAccentColor();
+});
+
+app.whenReady().then(() => {
+  createWindow();
+
+  systemPreferences.on('accent-color-changed', (_event, newColor) => {
+    broadcastAccentColor(newColor || getSystemAccentColor());
+  });
+});
 
 app.on('window-all-closed', () => {
   app.quit();

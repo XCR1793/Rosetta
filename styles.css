@@ -39,11 +39,27 @@ body {
   --neo-scene-glow-size: 56%;
   --neo-scene-glow: rgba(255, 255, 255, 0.119);
   --neo-picked-color: #d8dbeb;
+  --accent: #0078d4;
+  --accent-ink: #ffffff;
 
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+/* Resolved dark scene (CawLabs brightness: -1) */
+.app.neo-scene[data-theme="dark"] {
+  --neo-surface: #111212;
+  --neo-surface-base: #111212;
+  --neo-ink: #ececf0;
+  --neo-shadow-color: rgba(4, 5, 5, 0.388);
+  --neo-highlight-color: rgba(79, 80, 80, 0.388);
+  --neo-brightness: -1;
+  --neo-scene-glow: rgba(255, 255, 255, 0.059);
 }
 
 .title-bar {
@@ -194,4 +210,159 @@ body {
 
 .view[hidden] {
   display: none;
+}
+
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  height: 100%;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 18px;
+}
+
+.settings-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.settings-row__label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--neo-ink);
+}
+
+.settings-row__hint {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--neo-ink);
+  opacity: 0.55;
+}
+
+.theme-switch {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  -webkit-app-region: no-drag;
+}
+
+.theme-switch__track {
+  position: relative;
+  display: block;
+  width: 3.1rem;
+  height: 1.7rem;
+  padding: 0.22rem;
+}
+
+.theme-switch__thumb {
+  position: absolute;
+  top: 0.22rem;
+  left: 0.22rem;
+  width: 1.26rem;
+  height: 1.26rem;
+  transition: transform 180ms ease;
+}
+
+.theme-switch[aria-checked="true"] .theme-switch__thumb {
+  transform: translateX(1.4rem);
+  background: var(--accent);
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.accent-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.accent-auto-btn {
+  height: 1.7rem;
+  padding: 0 0.7rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--neo-ink);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  opacity: 0.72;
+  cursor: pointer;
+  transition:
+    opacity 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.accent-auto-btn:hover {
+  opacity: 1;
+  background: var(--neo-surface);
+  box-shadow:
+    var(--neo-shadow-x) var(--neo-shadow-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-shadow-color),
+    var(--neo-highlight-x) var(--neo-highlight-y) var(--neo-blur) var(--neo-spread)
+      var(--neo-highlight-color);
+}
+
+.accent-auto-btn[aria-pressed="true"] {
+  opacity: 1;
+  color: var(--accent-ink);
+  background: var(--accent);
+  box-shadow:
+    inset var(--neo-shadow-x) var(--neo-shadow-y) calc(var(--neo-blur) * 0.45) var(--neo-spread)
+      rgba(0, 0, 0, 0.18),
+    inset var(--neo-highlight-x) var(--neo-highlight-y) calc(var(--neo-blur) * 0.35) var(--neo-spread)
+      rgba(255, 255, 255, 0.18);
+}
+
+.accent-swatch {
+  position: relative;
+  display: inline-flex;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0.22rem;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.accent-swatch__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.accent-swatch__fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--neo-ink) 12%, transparent);
 }
